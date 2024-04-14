@@ -1,36 +1,120 @@
-body {
-    margin: 0;
-    padding: 0;
-    text-align: center; /* Выравнивание текста по центру */
-    min-height: 100vh; /* Минимальная высота равная высоте видимой области */
-    background-color: #f8f9fa; /* Цвет фона */
-}
+    body {
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        min-height: 100vh;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        background-color: #7f7f7f;
 
-header {
-    width: 100%; /* Ширина 100% */
-    background-color: #c3c3c3; /* Цвет фона */
-    color: white; /* Цвет текста */
-    text-align: center; /* Выравнивание текста по центру */
-    padding: 10px 0; /* Отступы внутри блока */
-}
+        background-image: url('../img/background.png');
+        background-size: cover; /* чтобы изображение занимало всю доступную область */
+        background-repeat: no-repeat; /* чтобы изображение не повторялось */
+        background-attachment: fixed; /* чтобы изображение оставалось на месте при прокрутке страницы */
+    }
 
-nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center; /* Выравнивание по горизонтали */
-}
+    header {
+        width: 100%;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
 
-nav ul li {
-    margin-right: 20px; /* Отступ между пунктами меню */
-}
+        background-color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-nav ul li:last-child {
-    margin-right: 0; /* Убираем отступ у последнего пункта меню */
-}
+    .player-info {
+        margin-left: 20px;
+    }
 
-.content {
-    width: 80%; /* Ширина контента */
-    margin: 20px auto; /* Выравнивание по центру */
-}
+    nav {
+        margin-right: 20px;
+    }
+
+
+    nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    nav ul li {
+        margin-right: 20px;
+    }
+
+    nav ul li:last-child {
+        margin-right: 0;
+    }
+
+    .content {
+        width: 80%;
+        margin: 20px auto;
+    }
+
+    a {
+        text-decoration: none;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 3px;
+    }
+
+    a:hover {
+        background-color: #555;
+    }
+
+    a.button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #f00;
+        color: #fff;
+        border-radius: 5px;
+        text-align: center;
+        text-transform: uppercase;
+        transition: background-color 0.3s ease;
+    }
+
+    a.button:hover {
+        background-color: #c00;
+    }
+
+    .horizontal-menu {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .horizontal-menu li {
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .horizontal-menu li:last-child {
+        margin-right: 0;
+    }
+
+    .nav-link {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #f00;
+        color: #fff;
+        border-radius: 5px;
+        text-align: center;
+        text-transform: uppercase;
+        transition: background-color 0.3s ease;
+    }
+
+    .nav-link:hover {
+        background-color: #c00;
+    }
+
+    .player-info-auth .logout-btn {
+        display: none;
+    }
+    
+    .player-info-auth:hover .logout-btn {
+        display: inline-block;
+    }

@@ -1,6 +1,11 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h2>Добро пожаловать!</h1>
-    <a href="{{ url_for('login') }}">Войти</a> | <a href="{{ url_for('register') }}">Зарегистрироваться</a>
+    <h2>Добро пожаловать!</h2>
+        {% if current_user.is_authenticated %}
+            <p>ЛОББИ</p>
+        {% else %}
+            <a href="{{ url_for('register') }}">Регистрация</a> | <a href="{{ url_for('login') }}">Вход</a>
+        {% endif %}
+    
 {% endblock %}

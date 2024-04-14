@@ -20,7 +20,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 
-
+stubUserRating=777
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,6 +59,8 @@ def before_request():
         {'url': url_for('logout'), 'name': 'Выйти'}
     ]
     g.pages = pages
+    g.stubUserRating = stubUserRating
+
 
 
 @app.route('/')
@@ -75,7 +77,7 @@ def login():
         if user and user.password == password:
             login_user(user)
             next_page = request.args.get('next')
-            return redirect(next_page or url_for('profile'))
+            return redirect(next_page or url_for('index'))
         else:
             # Обработка неверного логина или пароля
             return render_template('login.html', error='Неверный логин или пароль')
@@ -90,9 +92,9 @@ def register():
         user = User(username=username, password=password)
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('login'))
+        login_user(user)
+        return redirect(url_for('profile'))
     return render_template('register.html')
-
 
 @app.route('/profile')
 @login_required

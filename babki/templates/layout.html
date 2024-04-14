@@ -9,12 +9,20 @@
 </head>
 <body>
     <header>
-        <h1>My Flask App</h1>
+        <div class="player-info">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('profile') }}">{{ current_user.username }}, ({{ g.stubUserRating }})</a>
+            {% else %}
+                <a href="{{ url_for('register') }}">Регистрация</a> | <a href="{{ url_for('login') }}">Вход</a>
+            {% endif %}
+        </div>
         <nav>
             <ul class="horizontal-menu">
-                {% for page in g.pages %}
-                    <li><a href="{{ page.url }}">{{ page.name }}</a></li>
-                {% endfor %}
+                <li><a href="{{ url_for('index') }}">Лобби</a></li>
+                <li><a href="{{ url_for('profile') }}">Профиль</a></li>
+                <li><a href="{{ url_for('posts') }}">Посты</a></li>
+                <li><a href="{{ url_for('add_post') }}">Добавить пост</a></li>
+                <!-- <li><a href="{{ url_for('logout') }}">Выйти</a></li> -->
             </ul>
         </nav>
     </header>
@@ -23,7 +31,3 @@
     </div>
 </body>
 </html>
-
-
-
-

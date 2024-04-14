@@ -4,214 +4,341 @@
         {
             "title": "Кофемашина Cappuccino",
             "cost": 300,
+            "costMin":300,
+            "costMax":5000,
+            "costStep":100,
             "child": false
         },
         {
             "title": "Первая машина для ребенка",
-            "cost": 5000,
+            "cost": 3000,
+            "costMin":100,
+            "costMax":5000,
+            "costStep":100,
             "child": true
         },
         {
-            "title": "Получить новый телефон",
-            "cost": 300,
+            "title": "Новый телефон",
+            "cost": 10000,
+            "costMin":10000,
+            "costMax":80000,
+            "costStep":1000,
             "child": false
         },
         {
             "title": "Кухонный комбайн",
             "cost": 200,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Гидроцикл",
             "cost": 3000,
+            "costMin":1000,
+            "costMax":10000,
+            "costStep":100,
             "child": false
         },
         {
             "title": "Семейный отпуск",
-            "cost": 2500,
+            "cost": 30000,
+            "costMin":10000,
+            "costMax":100000,
+            "costStep":10000,
             "child": false
         },
         {
             "title": "Встреча выпускников школы",
             "cost": 500,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Поездка в винодельню",
             "cost": 1000,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Посетить казино",
             "cost": 800,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новые гольф-клюшки",
             "cost": 800,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новая аудиосистема",
             "cost": 1500,
+            "costMin":100,
+            "costMax":10000,
+            "costStep":100,
             "child": false
         },
         {
             "title": "Новая теннисная ракетка",
             "cost": 200,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новая автомагнитола",
             "cost": 700,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новая спортивная одежда",
             "cost": 300,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новая одежда",
             "cost": 1000,
+            "costMin":100,
+            "costMax":10000,
+            "costStep":100,
             "child": false
         },
         {
             "title": "Частные уроки для вашего ребенка",
             "cost": 500,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": true
         },
         {
             "title": "Свидание: ужин, концерт и десерт",
             "cost": 500,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Членство в гольф-клубе",
             "cost": 2000,
+            "costMin":1000,
+            "costMax":3000,
+            "costStep":1000,
             "child": false
         },
         {
             "title": "Оплатить обед с друзьями",
             "cost": 200,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Игровая консоль нового поколения",
             "cost": 600,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новый компьютер",
             "cost": 1800,
+            "costMin":100,
+            "costMax":10000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Большой телевизор",
             "cost": 2500,
+            "costMin":100,
+            "costMax":10000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Обустроить домашний спортзал",
             "cost": 3000,
+            "costMin":1000,
+            "costMax":10000,
+            "costStep":100,
             "child": false
         },
         {
             "title": "Билеты на концерт",
             "cost": 200,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новые ободки для вашей машины",
-            "cost": 2000,
+            "cost": 200,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Посетить стоматолога",
-            "cost": 700,
+            "cost": 2000,
+            "costMin":1000,
+            "costMax":10000,
+            "costStep":100,
             "child": false
         },
         {
             "title": "Перекрасить ваш дом",
             "cost": 600,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Ребенку нужны брекеты",
             "cost": 4000,
+            "costMin":100,
+            "costMax":10000,
+            "costStep":10,
             "child": true
         },
         {
             "title": "День рождения для вашего ребенка",
             "cost": 500,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": true
         },
         {
             "title": "Новый костюм на заказ",
             "cost": 1000,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Ремонт кухни",
             "cost": 7500,
+            "costMin":100,
+            "costMax":10000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новый шар для боулинга",
             "cost": 100,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Заменить кондиционер в вашей машине",
             "cost": 700,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новые часы",
             "cost": 200,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Рыболовная лодка",
             "cost": 5000,
+            "costMin":100,
+            "costMax":10000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Абонемент на сезон",
             "cost": 1500,
+            "costMin":100,
+            "costMax":5000,
+            "costStep":100,
             "child": false
         },
         {
             "title": "Костюмные украшения",
             "cost": 400,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новые шины",
             "cost": 600,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Новое удобное кресло",
             "cost": 500,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Купить картину местного художника",
             "cost": 800,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         },
         {
             "title": "Помочь оплатить свадьбу ребенка",
             "cost": 2000,
+            "costMin":100,
+            "costMax":10000,
+            "costStep":10,
             "child": true
         },
         {
             "title": "Новые солнечные очки",
             "cost": 200,
+            "costMin":100,
+            "costMax":1000,
+            "costStep":10,
             "child": false
         }
     ],
+
     "homes": [
         {
             "smallDeal": true,
@@ -320,6 +447,7 @@
             "cashFlow": 140
         }
     ],
+
     "stocks": [
         {
             "symbol": "ON2U",
@@ -422,6 +550,7 @@
             "flavor": "Опасения по поводу инфляции вызывают плохую цену акций этой долгосрочной фармацевтической компании."
         }
     ],
+
     "multi": [
         {
             "type": "Plex",
@@ -613,7 +742,8 @@
             "cashFlow": 3000,
             "units": 12
         }
-        ],
+    ],
+
     "businesses": [
         {
             "title": "Ищется ограниченный партнер",

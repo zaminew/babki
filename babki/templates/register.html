@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>Регистрация</h1>
+    <form method="post">
+        <label for="username">Имя пользователя:</label><br>
+        <input type="text" id="username" name="username" required><br>
+        <label for="password">Пароль:</label><br>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+{% endblock %}

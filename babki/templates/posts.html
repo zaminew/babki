@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>Посты</h1>
+    <a href="{{ url_for('add_post') }}">Добавить пост</a><br><br>
+    {% for post in posts %}
+        <div>
+            <p><strong>{{ post.author }}</strong>: {{ post.text }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}

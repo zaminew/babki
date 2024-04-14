@@ -1,0 +1,36 @@
+body {
+    margin: 0;
+    padding: 0;
+    text-align: center; /* Выравнивание текста по центру */
+    min-height: 100vh; /* Минимальная высота равная высоте видимой области */
+    background-color: #f8f9fa; /* Цвет фона */
+}
+
+header {
+    width: 100%; /* Ширина 100% */
+    background-color: #c3c3c3; /* Цвет фона */
+    color: white; /* Цвет текста */
+    text-align: center; /* Выравнивание текста по центру */
+    padding: 10px 0; /* Отступы внутри блока */
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Выравнивание по горизонтали */
+}
+
+nav ul li {
+    margin-right: 20px; /* Отступ между пунктами меню */
+}
+
+nav ul li:last-child {
+    margin-right: 0; /* Убираем отступ у последнего пункта меню */
+}
+
+.content {
+    width: 80%; /* Ширина контента */
+    margin: 20px auto; /* Выравнивание по центру */
+}

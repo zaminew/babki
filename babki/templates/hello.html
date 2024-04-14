@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <title>Hello from Flask</title>
+    {% if name %}
+      <h1>Hello {{ name }}!</h1>
+    {% else %}
+      <h1>Hello, World!</h1>
+    {% endif %}
+
+    <h1>Login</h1>
+    <button id="changeTextButton">Change Text</button>
+    <p id="dynamicText">Initial Text</p>
+
+    <script>
+        $(document).ready(function() {
+            $("#changeTextButton").click(function() {
+                $.ajax({
+                    url: "/get_dynamic_text",
+                    type: "GET",
+                    success: function(data) {
+                        $("#dynamicText").text(data);
+                    },
+                    error: function() {
+                        alert("Error occurred while fetching data. ОШТИБКА ПРИ ВЫПОЛНЕНИИ ЗАПРОСА");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

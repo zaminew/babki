@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>Добавить пост</h1>
+    <form method="post">
+        <label for="text">Текст поста:</label><br>
+        <textarea id="text" name="text" rows="4" cols="50" required></textarea><br>
+        <button type="submit">Добавить пост</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2>Добро пожаловать!</h1>
+    <a href="{{ url_for('login') }}">Войти</a> | <a href="{{ url_for('register') }}">Зарегистрироваться</a>
+{% endblock %}

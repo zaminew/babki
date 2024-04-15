@@ -1,12 +1,14 @@
 import json
 import random
 import os
+from typing import List
 
 # Получаем путь к текущему файлу
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Формируем путь к файлу 'doodads.json'
 events_file_Path = os.path.join(current_dir, 'data/events.json')
+doodads_file_path = os.path.join(current_dir, 'data/doodads.json')
 
 class Player:
     def __init__(self, name, balance, salary_level):
@@ -52,15 +54,22 @@ class Event:
     def execute_action(self, player : Player, action : Action) -> bool:
         return True
 
+    def get_event_info(self):
+        return f"\tname : {self.name} \n\tdesc : {self.effect}"
         #TODO наследники в результате должны вывести доступные действие с данным событием 
             # а пользователь может применить это действие на событии и получить результат
             # возможно понадобится несколько функций, вывод, ввод, результат. И это для одного шага
 
 
 class ExpenseEvent(Event):
-    def __init__(self, name, effect, expenses_data):
+    def __init__(self, name, effect, title, expense, costMin, costMax, costStep, child):
         super().__init__(name, effect)
-        self.expense = random.choice(expenses_data["doodads"])
+        self.title = title
+        self.expense = expense
+        self.costMin = costMin
+        self.costMax = costMax
+        self.costStep = costStep
+        self.child = child
 
     def get_action(self, player : Player) -> Action:
         return Action(False, 0, False, 0, True)
@@ -72,13 +81,16 @@ class ExpenseEvent(Event):
             return True
         return False
 
-
+    def get_event_info(self):
+        return f"\tname : {self.name} \n\tdesc : {self.effect} \n\tвы потеряли : {self.expense}"
 
 
 class StockEvent(Event):
-    def __init__(self, name, effect, stocks_data):
+    def __init__(self, name, effect, symbol, price, flavor):
         super().__init__(name, effect)
-        self.stock = random.choice(stocks_data["stocks"])
+        self.symbol = symbol
+        self.price = price
+        self.flavor = flavor
 
     def get_action(self, player : Player) -> Action:
         act = Action(False, 0, False, 0, True)
@@ -102,20 +114,52 @@ class StockEvent(Event):
         elif action.check:
             print(f"{self.name}: Проехали")
         return True
+    
+    def get_event_info(self):
+        return f"\tname : {self.name} \n\tdesc : {self.flavor} \n\tФин инструмент : {self.symbol} по цене {self.price}"
+
 
 class Game:
-    def __init__(self, player, events_data, expenses_data):
+    def __init__(self, player, events_data):
         self.player = player
-        self.events_data = events_data
-        self.expenses_data = expenses_data
+        self.events_data : List[Event] = []
+        self.current_event : Event = None
         self.current_step = 0
         self.months_passed = 0
 
+        self.expence_events : List[Event] = []
+        self.stock_events : List[Event] = []
+
+        self.group_events : List[List[Event]] = []
+
+        # Создать список объектов Event, ExpenseEvent, StockEvent из данных JSON
+        data = JsonLoader.load(events_file_Path)       
+        
+        for item in data["doodads"]:
+            self.expence_events.append(ExpenseEvent("Непредвиденные расходы", "Снова траты", item["title"], item["cost"], item["costMin"], item["costMax"], item["costStep"], item["child"]))
+        for item in data["stocks"]:
+            self.stock_events.append(StockEvent("Фондовый рынок", "купи/продай", item["symbol"], item["price"], item["flavor"]))
+
+        self.group_events = [self.expence_events, self.stock_events]
+
+        '''
+        for item in data["homes"]:
+            self.events_data.append(Event(item["title"], item["flavorText"]))
+        for item in data["doodads"]:
+            self.events_data.append(ExpenseEvent("Непредвиденные расходы", "Снова траты", item["title"], item["cost"], item["costMin"], item["costMax"], item["costStep"], item["child"]))
+        for item in data["stocks"]:
+            self.events_data.append(StockEvent("Фондовый рынок", "купи/продай", item["symbol"], item["price"], item["flavor"]))
+        '''
+
+
     def generate_event(self):
-        pass
+        #self.current_event = random.choice(self.events_data)
+        self.current_event = random.choice(random.choice(self.group_events))
 
     def play_step(self):
-        pass
+        if self.current_event:
+            print(f"current event : \n{self.current_event.get_event_info()}")
+        
 
     def play_month(self):
         event = random.choice(self.events_data)
@@ -144,10 +188,8 @@ class Game:
         
 
 # Загрузка данных из JSON
-events_data = [
-    Event("Бизнес, недвижимость", "Купи продай большой и малый бизнес или недвижимость, а еще есть сетевые"),
-    ExpenseEvent("Непредвиденные расходы", "Произошел неожиданный расход", JsonLoader.load(events_file_Path)),
-    StockEvent("Фондовый рынок", "Кпи продай акции облигации и другие инструменты", JsonLoader.load(events_file_Path))
+events_data : List[Event] = [
+    
 ]
 
 #TODO в самом событии будет указано что можно делать с этим событием и какие кнопки будут доступны а так же доступное колличество
@@ -155,11 +197,13 @@ events_data = [
 
 player = Player("Player1", 10000, 1000)
 
-game = Game(player, events_data, JsonLoader.load(events_file_Path))
+game = Game(player, events_data=events_data)
 
 while True:
-    game.play_month()
+    game.generate_event()
+    game.play_step()
     input("Press Enter to continue...\n")
+
 
 
 #TODO если будут события разного типа на одном шаге то можно попробовтаь написать функцию 

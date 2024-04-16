@@ -42,6 +42,7 @@ class ExpenseEvent(Event):
 
     def get_event_info(self):
         return f"\tname : {self.name} \n\tdesc : {self.effect} \n\tвы потеряли : {self.expense}"
+    
 
 
 class StockEvent(Event):

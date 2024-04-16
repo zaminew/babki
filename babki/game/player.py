@@ -3,8 +3,9 @@ class Player:
         self.name = name
         self.balance = balance
         self.salary_level = salary_level
-        self.credits = 0
-        self.child = False
+        self.credit = 0
+        self.child : bool = False
+        self.is_ready : bool = False
 
     def take_credit(self, amount):
         pass

@@ -13,7 +13,7 @@ app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path, 'data', 'site.db')
 #app.config['SECRET_KEY'] = 'your_secret_key'
-# FIXIT СКРЫТЬ ВСЕ КЛЮЧИ vvvvvvvvvvvvvvv
+# FIXME СКРЫТЬ ВСЕ КЛЮЧИ vvvvvvvvvvvvvvv
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 # TODO СКРЫТЬ ВСЕ КЛЮЧИ ^^^^^^^^^^^^^^
 

@@ -7,11 +7,8 @@ class Event:
         self.effect = effect
         self.input_requires = False
 
-    def get_action(self, player : Player) -> Action:
+    def get_actions(self) -> Action:
         return Action(False, 0, False, 0, True)
-
-    def execute_action(self, player : Player, action : Action) -> bool:
-        return True
 
     def get_event_info(self):
         return f"\tname : {self.name} \n\tdesc : {self.effect}"
@@ -30,15 +27,8 @@ class ExpenseEvent(Event):
         self.costStep = costStep
         self.child = child
 
-    def get_action(self, player : Player) -> Action:
+    def get_actions(self) -> Action:
         return Action(False, 0, False, 0, True)
-
-    def execute_action(self, player, action : Player):
-        cost = self.expense['cost']
-        if player.balance >= cost:
-            player.balance -= cost
-            return True
-        return False
 
     def get_event_info(self):
         return f"\tname : {self.name} \n\tdesc : {self.effect} \n\tвы потеряли : {self.expense}"
@@ -52,28 +42,44 @@ class StockEvent(Event):
         self.price = price
         self.flavor = flavor
 
-    def get_action(self, player : Player) -> Action:
-        act = Action(False, 0, False, 0, True)
-        price = self.stock['price']
-        if price > player.balance:
-            act.buy = True
-            act.buy_amount = player.balance // price
-        # TODO if player has stock he can sell
-        return act
+    def get_actions(self) -> Action:        
+        return Action(True, 1, False, 0, True)
 
-    def execute_action(self, player : Player, action : Action) -> bool:
-        price = self.stock['price']
-        if action.buy:
-            summ = action.buy_amount * price
-            player.balance -= summ
-            print(f"{self.name}: Покупка -{summ}")
-        elif action.sell:
-            summ = action.sell_amount * price
-            player.balance += summ 
-            print(f"{self.name}: Продажа +{summ}")
-        elif action.check:
-            print(f"{self.name}: Проехали")
-        return True
-    
     def get_event_info(self):
         return f"\tname : {self.name} \n\tdesc : {self.flavor} \n\tФин инструмент : {self.symbol} по цене {self.price}"
+    
+
+class PropertyEvent(Event):
+    def __init__(self, name, title, flavor_text, cost, mortgage, down_payment, cash_flow, bed, bath):
+        super().__init__(name, title)
+        self.title = title
+        self.flavor_text = flavor_text
+        self.cost = cost
+        self.mortgage = mortgage
+        self.down_payment = down_payment
+        self.cash_flow = cash_flow
+        self.bed = bed
+        self.bath = bath
+
+    def get_actions(self) -> Action:
+        return Action(True, 200, True, 200, True)
+
+    def get_event_info(self):
+        return f"Название : {self.title} \n\tОписание : {self.flavor_text} \n\tСтоимость : {self.cost} \n\tИпотека : {self.mortgage} \n\tПервоначальный взнос : {self.down_payment} \n\tДенежный поток : {self.cash_flow} \n\tКоличество спален : {self.bed} \n\tКоличество ванных комнат : {self.bath}"
+
+
+class BusinessEvent(Event):
+    def __init__(self, name, effect, title, flavor_text, cost, mortgage, down_payment, cash_flow):
+        super().__init__(name, effect)
+        self.title = title
+        self.flavor_text = flavor_text
+        self.cost = cost
+        self.mortgage = mortgage
+        self.down_payment = down_payment
+        self.cash_flow = cash_flow
+
+    def get_actions(self) -> Action:
+        return Action(True, 1, False, 0, True)
+
+    def get_event_info(self):
+        return f"Название : {self.title} \n\tОписание : {self.flavor_text} \n\tСтоимость : {self.cost} \n\tИпотека : {self.mortgage} \n\tПервоначальный взнос : {self.down_payment} \n\tДенежный поток : {self.cash_flow}"

@@ -339,7 +339,7 @@
         }
     ],
 
-    "homes": [
+    "Property": [
         {
             "smallDeal": true,
             "type": "Квартира",
@@ -444,7 +444,9 @@
             "cost": 40000,
             "mortgage": 36000,
             "downPayment": 4000,
-            "cashFlow": 140
+            "cashFlow": 140,
+            "bed": 2,
+            "bath": 1
         }
     ],
 

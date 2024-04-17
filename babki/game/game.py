@@ -58,6 +58,8 @@ class Game:
 
         self.expence_events : List[Event] = []
         self.stock_events : List[Event] = []
+        self.property_events : List[Event] = []
+        self.business_events : List[Event] = []
 
         self.group_events : List[List[Event]] = []
 
@@ -68,9 +70,14 @@ class Game:
             self.expence_events.append(ExpenseEvent("Непредвиденные расходы", "Снова траты", item["title"], item["cost"], item["costMin"], item["costMax"], item["costStep"], item["child"]))
         for item in data["stocks"]:
             self.stock_events.append(StockEvent("Фондовый рынок", "купи/продай", item["symbol"], item["price"], item["flavor"]))
+        for item in data["Property"]:
+            self.property_events.append(PropertyEvent("недвижимость", item["title"], item["flavorText"], item["cost"], item["mortgage"], item["downPayment"], item["cashFlow"], item["bed"], item["bath"]))
+        for item in data["businesses"]:
+            self.business_events.append(BusinessEvent("Бизнес", "Покупка/продажа бизнеса", item["title"], item["flavorText"], item["cost"], item["mortgage"], item["downPayment"], item["cashFlow"]))
+
         # TODO добавь событий
 
-        self.group_events = [self.expence_events, self.stock_events]
+        self.group_events = [self.expence_events, self.stock_events, self.property_events, self.business_events]
         # NOTE группы событий для режима с регулярными типами событий. вариант группировать словари или другой вариант ставить тэги 
 
         print('\033[35m' + f"создана новая игра с параметрами {self.settings.__str__()}" + '\033[0m')
@@ -82,7 +89,7 @@ class Game:
             if char == 'y' or char == 'r': 
                 print('\033[35m' + 'игра началась' + '\033[0m')
                 break
-            
+        
             # TODO добавить логику ожидания входа или готовности игроков
 
     def end_game(self):
@@ -90,23 +97,52 @@ class Game:
         # TODO логика вывода статистики и завершения игры
 
     def get_event(self) -> Event:
-        #self.current_event = random.choice(self.events_data)
-        return random.choice(random.choice(self.group_events))
+        self.current_event = random.choice(random.choice(self.group_events))
+        return self.current_event
 
-    def play_step(self, event : Event):
+    def print_event(self, event : Event):
         if event:
             color = '\033[37m'
             if isinstance(event, ExpenseEvent):
                 color = '\033[31m'
             elif isinstance(event, StockEvent):
+                color = '\033[33m'
+            elif isinstance(event, PropertyEvent):
                 color = '\033[36m'
+            elif isinstance(event, BusinessEvent):
+                color = '\033[34m'
 
             print(color + f"current event : \n{event.get_event_info()}" + '\033[0m')
+
+            actions = event.get_actions()
+            if actions:
+                act_str = ''
+                if actions.buy: 
+                    act_str += '(1)\033[32m купить ' + '\033[0m' + str(actions.buy_amount) + ' макс '
+                if actions.sell:
+                    act_str += '\033[35m' + '(2)\033[31m продать ' + '\033[0m' + str(actions.sell_amount) + ' макс '
+                if actions.check:
+                    act_str += '\033[35m' + '(3)\033[33m пропустить ' + '\033[0m'
+
+                print('\033[35m' + f"доступные действия : " + act_str + '\033[0m')
+            else:
+                print('\033[31m' + f"нет доступных действий : \033[0m")
+
+    def play_step(self, ch):
+        if ch == '1':
+            pass
+        elif ch == '2':
+            pass
+        elif ch == '3':
+            self.print_event(self.get_event())
         
+        
+
+
 
     def play_month(self):
         event = random.choice(self.events_data)
-        act = event.get_action(self.player)
+        act = event.get_actions(self.player)
         print(f"name {event.name}")
         if act.buy:
             print(" BUY ")

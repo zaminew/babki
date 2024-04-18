@@ -2,4 +2,4 @@ Flask
 Flask-Login
 flask_sqlalchemy
 markupsafe
-
+jsonschema

@@ -1,7 +1,7 @@
 from player import Player
-from game import Game, GameSettings
-from game import Speed, Difficulty, GameType, GameMode
-н
+from game import Game
+from game_setting import GameSettings, Speed, Difficulty, GameType, GameMode
+
 # TODO при запуске скрипта в него передаются параметры игры например 
     # режим игры колличество игроков, ограничение времени на ход, возможность видеть отчеты других, валюта, сумма или поток для победы и так далее 
    # NOTE режимы игры: у всех одни и те же события или у каждого свое

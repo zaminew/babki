@@ -1,8 +1,8 @@
 import unittest
 
 from player import Player
-from game import Game, GameSettings
-from game import Speed, Difficulty, GameType, GameMode
+from game import Game
+from game_setting import GameSettings, Speed, Difficulty, GameType, GameMode
 
 class TestGame(unittest.TestCase):
     def test_create_game(self):

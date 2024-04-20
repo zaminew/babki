@@ -46,12 +46,12 @@ class ExpenseEvent(Event):
 
 
 class StockEvent(Event):
-    def __init__(self, symbol, flavor, price):
+    def __init__(self, symbol, flavor, price, quantity = 0):
         super().__init__(symbol, flavor)
         self.symbol = symbol
         self.price = price
         self.flavor = flavor
-        self.quantity = 1
+        self.quantity = quantity
 
     def get_actions(self, player : Player) -> Action:      
         act = Action(False, 0, False, 0, True)
@@ -70,20 +70,20 @@ class StockEvent(Event):
     
     def execute_action(self, action : Action, player : Player):
         if action.buy and self.get_actions(player).buy:
-            if player.balance >= self.price:
-                player.balance -= self.price
+            if player.balance >= self.price * action.buy_amount:
+                player.balance -= self.price * action.buy_amount
                 event_index = next((index for index, event in enumerate(player.stocks) if event.name == self.name), None)
                 if event_index is not None:
-                    player.stocks[event_index].quantity += 1
+                    player.stocks[event_index].quantity += action.buy_amount
                 else:
-                    player.stocks.append(StockEvent(self.name, '', self.price))
+                    player.stocks.append(StockEvent(self.name, '', self.price, action.buy_amount))
             return True
         
         if action.sell and self.get_actions(player).sell:
             event_index = next((index for index, event in enumerate(player.stocks) if event.name == self.name), None)
-            if event_index is not None:
-                player.stocks[event_index].quantity -= 1
-                player.balance += self.price
+            if event_index is not None and player.stocks[event_index].quantity >= action.sell_amount:
+                player.stocks[event_index].quantity -= action.sell_amount
+                player.balance += self.price * action.sell_amount
                 if player.stocks[event_index].quantity <= 0:
                     del player.stocks[event_index]
             return True
@@ -91,6 +91,8 @@ class StockEvent(Event):
         if action.check and self.get_actions(player).check:
             print('executed stock')
             return True
+        
+        print("error operation stock")
         return False
 
     def get_event_info(self):

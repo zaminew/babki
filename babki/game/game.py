@@ -47,7 +47,8 @@ class Game:
 
         # TODO добавь событий
 
-        self.group_events = [self.expence_events, self.stock_events, self.property_events, self.business_events]
+        #self.group_events = [self.expence_events, self.stock_events, self.property_events, self.business_events]
+        self.group_events = [self.stock_events]
         # NOTE группы событий для режима с регулярными типами событий. вариант группировать словари или другой вариант ставить тэги 
 
         print('\033[35m' + f"создана новая игра с параметрами {self.settings.__str__()}" + '\033[0m')
@@ -104,16 +105,26 @@ class Game:
         act = False
         if ch == '1':
             act = True
+            quantity = int(input("Введите количество: "))
+            if quantity > event_action.buy_amount:
+                print(f"вы не можете купить больше чем {event_action.buy_amount}")
+                return False
             if event_action.buy:
                 player_action.buy = True
-                print("покупка " + self.current_event.name)
+                player_action.buy_amount = quantity
+                print(f"покупка {self.current_event.name} в количестве {quantity}")
             else:
                 print("вы не можете купить " + self.current_event.name)
         elif ch == '2':
             act = True
+            quantity = int(input("Введите количество: "))
+            if quantity > event_action.sell_amount:
+                print(f"вы не можете продать больше чем {event_action.sell_amount}")
+                return False
             if event_action.sell:
                 player_action.sell = True
-                print("продажа " + self.current_event.name)
+                player_action.sell_amount = quantity
+                print(f"продажа {self.current_event.name} в количестве {quantity}")
             else:
                 print("вы не можете продать " + self.current_event.name)
         elif ch == '3':

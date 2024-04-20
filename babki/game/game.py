@@ -37,9 +37,9 @@ class Game:
         data = JsonLoader.load(events_file_Path)       
         
         for item in data["doodads"]:
-            self.expence_events.append(ExpenseEvent("Непредвиденные расходы", "Снова траты", item["title"], item["cost"], item["costMin"], item["costMax"], item["costStep"], item["child"]))
+            self.expence_events.append(ExpenseEvent(item["title"], "", item["cost"], item["costMin"], item["costMax"], item["costStep"], item["child"]))
         for item in data["stocks"]:
-            self.stock_events.append(StockEvent("Фондовый рынок", "купи/продай", item["symbol"], item["price"], item["flavor"]))
+            self.stock_events.append(StockEvent(item["symbol"], item["flavor"], item["price"]))
         for item in data["Property"]:
             self.property_events.append(PropertyEvent("недвижимость", item["title"], item["flavorText"], item["cost"], item["mortgage"], item["downPayment"], item["cashFlow"], item["bed"], item["bath"]))
         for item in data["businesses"]:
@@ -66,7 +66,7 @@ class Game:
         self.is_game_over = True
         # TODO логика вывода статистики и завершения игры
 
-    def get_event(self) -> Event:
+    def get_new_event(self) -> Event:
         self.current_event = random.choice(random.choice(self.group_events))
         return self.current_event
 
@@ -81,10 +81,10 @@ class Game:
                 color = '\033[36m'
             elif isinstance(event, BusinessEvent):
                 color = '\033[34m'
-
+            print(f"\033[31m баланс игрока : {self.player.balance}" + '\033[0m')
             print(color + f"current event : \n{event.get_event_info()}" + '\033[0m')
 
-            actions = event.get_actions()
+            actions = event.get_actions(self.player)
             if actions:
                 act_str = ''
                 if actions.buy: 
@@ -99,14 +99,35 @@ class Game:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
 
     def play_step(self, ch):
+        event_action = self.current_event.get_actions(self.player)
+        player_action = Action(False, 0, False, 0, False)
+        act = False
         if ch == '1':
-            pass
+            act = True
+            if event_action.buy:
+                player_action.buy = True
+                print("покупка " + self.current_event.name)
+            else:
+                print("вы не можете купить " + self.current_event.name)
         elif ch == '2':
-            pass
+            act = True
+            if event_action.sell:
+                player_action.sell = True
+                print("продажа " + self.current_event.name)
+            else:
+                print("вы не можете продать " + self.current_event.name)
         elif ch == '3':
-            self.print_event(self.get_event())
+            act = True
+            player_action.check = True
+            print("пропуск ")
+        elif ch == '4':
+            #print(self.player.get_assets_value())
+            print(self.player.get_assets_info())
+
         
-        
+        if act and self.current_event.execute_action(player_action, self.player):
+            print(" ...успешно... ")
+            self.print_event(self.get_new_event())
 
 
 

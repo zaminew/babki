@@ -27,6 +27,7 @@ class BuyStrategy(ActionStrategy):
             return False, 'Вы не можете использовать покупку для этого события'
         else:
             return False, 'function not implemented'
+        
 class SellStrategy(ActionStrategy):
     def execute(self, player : Player, event : Event, amount : int):
         if amount <= 0: 

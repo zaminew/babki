@@ -48,8 +48,8 @@ class Game:
 
         # TODO добавь событий
 
-        #self.group_events = [self.expence_events, self.stock_events, self.property_events, self.business_events]
-        self.group_events = [self.stock_events]
+        self.group_events = [self.expence_events, self.stock_events, self.property_events, self.business_events]
+        #self.group_events = [self.stock_events]
         # NOTE группы событий для режима с регулярными типами событий. вариант группировать словари или другой вариант ставить тэги 
 
         print('\033[35m' + f"создана новая игра с параметрами {self.settings.__str__()}" + '\033[0m')
@@ -100,6 +100,7 @@ class Game:
             else:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
             '''
+
     def play_step(self, ch):
         act : Action = None
         if ch == '1':
@@ -123,7 +124,6 @@ class Game:
                 self.print_event(self.get_new_event())
             else:
                 print(res[1])
-
 
     def play_month(self):
         event = random.choice(self.events_data)

@@ -5,6 +5,7 @@ from typing import List
 
 from player import Player
 from event import *
+from strategies import *
 from game_setting import GameSettings
 from json_loader import JsonLoader
 
@@ -39,7 +40,7 @@ class Game:
         for item in data["doodads"]:
             self.expence_events.append(ExpenseEvent(item["title"], "", item["cost"], item["costMin"], item["costMax"], item["costStep"], item["child"]))
         for item in data["stocks"]:
-            self.stock_events.append(StockEvent(item["symbol"], item["flavor"], item["price"]))
+            self.stock_events.append(StockEvent(item["symbol"], item["flavor"], item["price"], item["quantity"]))
         for item in data["Property"]:
             self.property_events.append(PropertyEvent("недвижимость", item["title"], item["flavorText"], item["cost"], item["mortgage"], item["downPayment"], item["cashFlow"], item["bed"], item["bath"]))
         for item in data["businesses"]:
@@ -83,7 +84,7 @@ class Game:
                 color = '\033[34m'
             print(f"\033[31m баланс игрока : {self.player.balance}" + '\033[0m')
             print(color + f"current event : \n{event.get_event_info()}" + '\033[0m')
-
+            '''
             actions = event.get_actions(self.player)
             if actions:
                 act_str = ''
@@ -97,38 +98,30 @@ class Game:
                 print('\033[35m' + f"доступные действия : " + act_str + '\033[0m')
             else:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
-
+            '''
     def play_step(self, ch):
-        event_action = self.current_event.get_actions(self.player)
-        player_action = Action(False, 0, False, 0, False)
-        act = False
+        act : Action = None
         if ch == '1':
-            act = True
-            if event_action.buy:
-                player_action.buy = True
-                print("покупка " + self.current_event.name)
-            else:
-                print("вы не можете купить " + self.current_event.name)
+            act = Action.BUY
+            amount = int(input('количество для покупки -> '))
         elif ch == '2':
-            act = True
-            if event_action.sell:
-                player_action.sell = True
-                print("продажа " + self.current_event.name)
-            else:
-                print("вы не можете продать " + self.current_event.name)
+            act = Action.SELL
+            amount = int(input('количество для продажи -> '))
         elif ch == '3':
-            act = True
-            player_action.check = True
-            print("пропуск ")
+            act = Action.CHECK
+            amount = 1
         elif ch == '4':
             #print(self.player.get_assets_value())
             print(self.player.get_assets_info())
 
-        
-        if act and self.current_event.execute_action(player_action, self.player):
-            print(" ...успешно... ")
-            self.print_event(self.get_new_event())
-
+        strategy = StrategyFactory.get_strategy(act)
+        if act:
+            res = strategy.execute(self.player, self.current_event, amount)
+            if res[0]:
+                print(res[1])
+                self.print_event(self.get_new_event())
+            else:
+                print(res[1])
 
 
     def play_month(self):

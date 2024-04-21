@@ -1,4 +1,5 @@
 from typing import List
+from event import *
 
 class Player:
     def __init__(self, name, balance, salary_level):
@@ -9,9 +10,9 @@ class Player:
         self.child : bool = False
         self.is_ready : bool = False
 
-        self.properties = []
-        self.stocks = []
-        self.businesses = []
+        self.properties : List[PropertyEvent] = []
+        self.stocks : List[StockEvent] = []
+        self.businesses : List[BusinessEvent] = []
 
     def take_credit(self, amount):
         pass

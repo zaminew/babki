@@ -19,10 +19,12 @@ from game_setting import GameSettings, Speed, Difficulty, GameType, GameMode
     # ждет пока все игроки не передадут информацию об активности. кроме основной активности, 
         # игра может принимать запросы на исполнение промежуточных активносте типа взять/погасить кредит и т. п.
     # в конце хода когда все сделали свои действия проверяются условия для победы, и если победы нет, то генерируется новое событие.
+    # попробовать переписать режимы игры и типы игры по паттерну стратегия
+    # Аукционы для покупки некоторых событий
+    # и в целом взаимодействия между игроками
 
 
-
-player_list = [Player("Eugene", 10000, 1000), Player("Eugene", 10000, 1000)]
+player_list = [Player("Eugene", 100000, 1000), Player("Eugene", 10000, 1000)]
 
 game_settings = GameSettings(6, Speed.NORMAL, Difficulty.MEDIUM, GameType.ONE_FOR_ALL, GameMode.STABLE_EVENTS, True)
 

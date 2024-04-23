@@ -42,7 +42,7 @@ class Game:
         for item in data["stocks"]:
             self.stock_events.append(StockEvent(item["symbol"], item["flavor"], item["price"], item["quantity"]))
         for item in data["Property"]:
-            self.property_events.append(PropertyEvent("недвижимость", item["title"], item["flavorText"], item["cost"], item["mortgage"], item["downPayment"], item["cashFlow"], item["bed"], item["bath"]))
+            self.property_events.append(PropertyEvent(item["type"], item["flavorText"], item["cost"], item["mortgage"], item["downPayment"], item["cashFlow"], item["bed"], item["bath"]))
         for item in data["businesses"]:
             self.business_events.append(BusinessEvent("Бизнес", "Покупка/продажа бизнеса", item["title"], item["flavorText"], item["cost"], item["mortgage"], item["downPayment"], item["cashFlow"]))
 
@@ -114,8 +114,8 @@ class Game:
             #print(self.player.get_assets_value())
             print(self.player.get_assets_info())
 
-        strategy = StrategyFactory.get_strategy(act)
         if act:
+            strategy = StrategyFactory.get_strategy(act, self.current_event)
             res = strategy.execute(self.player, self.current_event, amount)
             if res[0]:
                 print(res[1])

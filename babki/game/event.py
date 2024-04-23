@@ -36,10 +36,8 @@ class StockEvent(Event):
     
 
 class PropertyEvent(Event):
-    def __init__(self, name, title, flavor_text, cost, mortgage, down_payment, cash_flow, bed, bath):
-        super().__init__(name, title)
-        self.title = title
-        self.flavor_text = flavor_text
+    def __init__(self, name, desc, cost, mortgage, down_payment, cash_flow, bed, bath):
+        super().__init__(name, desc)
         self.cost = cost
         self.mortgage = mortgage
         self.down_payment = down_payment
@@ -48,7 +46,7 @@ class PropertyEvent(Event):
         self.bath = bath
 
     def get_event_info(self):
-        return f"Название : {self.title} \n\tОписание : {self.flavor_text} \n\tСтоимость : {self.cost} \n\tИпотека : {self.mortgage} \n\tПервоначальный взнос : {self.down_payment} \n\tДенежный поток : {self.cash_flow} \n\tКоличество спален : {self.bed} \n\tКоличество ванных комнат : {self.bath}"
+        return f"Название : {self.name} \n\tОписание : {self.desc} \n\tСтоимость : {self.cost} \n\tИпотека : {self.mortgage} \n\tПервоначальный взнос : {self.down_payment} \n\tДенежный поток : {self.cash_flow} \n\tКоличество спален : {self.bed} \n\tКоличество ванных комнат : {self.bath}"
 
 
 class BusinessEvent(Event):

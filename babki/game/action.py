@@ -8,3 +8,4 @@ class Action(EnumStr):
     BUY = 'buy'
     SELL = 'sell'
     CHECK = 'check'
+    GET = 'get'

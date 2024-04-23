@@ -110,7 +110,7 @@ class Game:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
             '''
     def play_step(self, ch):
-        pass
+        self.print_event(self.get_new_card())
         '''
         act : Action = None
         if ch == '1':

@@ -1,5 +1,5 @@
 from player import Player
-from event import *
+from myDocker.babki.game.item import *
 from action import Action
 
 class ActionStrategy:

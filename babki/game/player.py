@@ -1,5 +1,5 @@
 from typing import List
-from event import *
+from item import *
 
 class Player:
     def __init__(self, name, balance, salary_level):
@@ -10,9 +10,9 @@ class Player:
         self.child : bool = False
         self.is_ready : bool = False
 
-        self.properties : List[PropertyEvent] = []
-        self.stocks : List[StockEvent] = []
-        self.businesses : List[BusinessEvent] = []
+        self.properties : List[PropertyItem] = []
+        self.stocks : List[StockItem] = []
+        self.businesses : List[BusinessItem] = []
 
     def take_credit(self, amount):
         pass
@@ -24,7 +24,7 @@ class Player:
         pass
 
     def get_assets_value(self):
-        return sum(property.cost for property in self.properties) + sum(stock.price for stock in self.stocks) + sum(business.cost for business in self.businesses)
+        return sum(property.price for property in self.properties) + sum(stock.price for stock in self.stocks) + sum(business.price for business in self.businesses)
 
     def get_assets_info(self):
         return  {

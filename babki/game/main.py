@@ -22,16 +22,20 @@ from game_setting import GameSettings, Speed, Difficulty, GameType, GameMode
     # попробовать переписать режимы игры и типы игры по паттерну стратегия
     # Аукционы для покупки некоторых событий
     # и в целом взаимодействия между игроками
+    # например продажа акций сначала игрокам, как в монополии в случае банкротства
+    # события влияющие на всех например, ввели льготную программу на ипотеку - денежный поток с квартир снизился
+    # вышел закон об обязательном фискальном аппарате, заплатите еще 1000 рублей и денежный потом - 1%
 
 
-player_list = [Player("Eugene", 100000, 1000), Player("Eugene", 10000, 1000)]
+
+player_list = [Player("Eugene", 10000, 1000), Player("Eugene", 10000, 1000)]
 
 game_settings = GameSettings(6, Speed.NORMAL, Difficulty.MEDIUM, GameType.ONE_FOR_ALL, GameMode.STABLE_EVENTS, True)
 
 game = Game(game_settings, player_list)
 
 game.start()
-game.print_event(game.get_new_event())
+game.print_event(game.get_new_card())
 ch = None
 while True:
     game.play_step(ch)

@@ -110,6 +110,8 @@ class Game:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
             '''
     def play_step(self, ch):
+        pass
+        '''
         act : Action = None
         if ch == '1':
             act = Action.BUY
@@ -133,6 +135,7 @@ class Game:
             else:
                 print(res[1])
 
+        '''
 
     def play_month(self):
         event = random.choice(self.events_data)

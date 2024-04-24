@@ -28,7 +28,25 @@ class Player:
 
     def get_assets_info(self):
         return  {
-            "properties": [property.name for property in self.properties],
+            "properties": [
+                {
+                    "name": property.name,
+                    "price": property.price,
+                    "mortgage": property.mortgage,
+                    "down_payment": property.down_payment,
+                    "cash_flow": property.cash_flow,
+                    "bed": property.bed,
+                    "bath": property.bath
+                } for property in self.properties
+            ],
             "stocks": [{"name": stock.name, "quantity": stock.quantity} for stock in self.stocks],
-            "businesses": [business.name for business in self.businesses]
+            "businesses": [
+                {
+                    "name": business.name,
+                    "price": business.price,
+                    "mortgage": business.mortgage,
+                    "down_payment": business.down_payment,
+                    "cash_flow": business.cash_flow
+                } for business in self.businesses
+            ]
         }

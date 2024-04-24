@@ -3,19 +3,19 @@
     "expense_cards": [
         {
             "title": "Кофемашина Cappuccino",
-            "description": "description",
+            "description": "Старая кофемашина сломалась срочно нужна новая, не могу без кофе",
             "price": 300,
             "child": false
         },
         {
             "title": "Первая машина для ребенка",
-            "description": "description",
+            "description": "Засмеют в школе если только у него не будет",
             "price": 3000,
             "child": true
         },
         {
             "title": "Новый телефон",
-            "description": "description",
+            "description": "Разбили в драке на улице",
             "price": 100,
             "child": false
         }

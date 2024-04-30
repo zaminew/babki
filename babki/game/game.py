@@ -27,10 +27,10 @@ class Game:
         self.months_passed = 0
         self.is_game_over = False
 
-        self.expense_cards : List[Card] = []
-        self.stock_cards : List[Card] = []
-        self.property_cards: List[Card] = []
-        self.business_cards : List[Card] = []
+        self.expense_cards : List[ExpenseCard] = []
+        self.stock_cards : List[StockCard] = []
+        self.property_cards: List[PropertyCard] = []
+        self.business_cards : List[BusinessCard] = []
 
         self.Deck : List[List[Card]] = []
 
@@ -110,60 +110,48 @@ class Game:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
             '''
     def play_step(self, ch):
-        self.print_event(self.get_new_card())
-        '''
         act : Action = None
-        if ch == '1':
+        if ch == 'BUY':
             act = Action.BUY
-            amount = int(input('количество для покупки -> '))
-        elif ch == '2':
+        elif ch == 'SELL':
             act = Action.SELL
-            amount = int(input('количество для продажи -> '))
-        elif ch == '3':
-            act = Action.CHECK
-            amount = 1
-        elif ch == '4':
+        elif ch == 'SKIP':
+            act = Action.SKIP
+        elif ch == 'CHECK':
             #print(self.player.get_assets_value())
             print(self.player.get_assets_info())
 
         if act:
-            strategy = StrategyFactory.get_strategy(act, self.current_card)
-            res = strategy.execute(self.player, self.current_card, amount)
+            res = self.current_card.execute(self.player, act, 1)
+            print("-------------------->" + str(res))
             if res[0]:
                 print(res[1])
                 self.print_event(self.get_new_card())
             else:
                 print(res[1])
-
-        '''
-
-    def play_month(self):
-        event = random.choice(self.events_data)
-        act = event.get_actions(self.player)
-        print(f"name {event.name}")
-        if act.buy:
-            print(" BUY ")
-            print(act.buy_amount)
-        if act.sell:
-            print(" SELL ")
-            print(act.sell_amount)
-        if act.check:
-            print(" CHECK ")
-
         
-        event.execute_action(self.player, Action(False, 0, False, 0, True))
-        if event.input_requires:
-            print("")
-        self.current_step += 1
+        allow = self.current_card.get_available_actions(self.player)
         
-        print(f"Step: {self.current_step}")
-        if self.current_step % 4 == 0:
-            print("PAYDAY")
-            self.player.balance += self.player.salary_level
-        print(f"Balance: {self.player.balance}")
-        
+        return {
+            'actions': {
+                'buy': True if Action.BUY in allow else False,
+                'sell': True if Action.SELL in allow else False,
+                'skip': True if Action.SKIP in allow else False
+            },
+            'player': {
+                'balance': self.player.balance,
+                'salary_level': self.player.salary_level,
+                'name': self.player.name,
+                'stocks': self.player.get_assets_info()
+            },
+            'card': self.current_card.get_card_info(),
+            "label_text_left": f"{'BUY' if Action.BUY in allow else 'NON'}: {random.randint(1, 100)}",
+            "label_text_center": f"{'SELL' if Action.SELL in allow else 'NON'}: {random.randint(1, 100)}",
+            "label_text_right": f"{'SKIP' if Action.SKIP in allow else 'NON'}: {random.randint(1, 100)}"
+        }
 
 #NOTE в самом событии будет указано что можно делать с этим событием и какие кнопки будут доступны а так же доступное колличество
 
 # NOTE если будут события разного типа на одном шаге то можно попробовтаь написать функцию 
     # которая будет проверять как давно события этого типа генерировались и если давно то повышать вероятность
+    # особенно чтобы не было два события подряд maybe

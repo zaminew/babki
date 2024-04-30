@@ -19,7 +19,7 @@ class Card:
         return actions
 
     def get_card_info(self):
-        return f"\ttitle : {self.title} \n\tdesc : {self.desc}"
+        return f"\ttitle : {self.title} \n\tdesc : {self.description}"
 
     def execute(self, player : Player, action : Action, amount : int):
         pass
@@ -41,13 +41,13 @@ class ExpenseCard(Card):
         return actions
     
     def get_card_info(self):
-        card_info = f"\ttitle : {self.title}\n\tdescription : {self.description[:40]}..."\
-                    f"\n\tprice : {self.price}, child : {self.child}"
+        card_info = f"title : {self.title}\ndescription : {self.description}"\
+                    f"\n\nprice : {self.price}, child : {self.child}"
         return card_info
 
     def execute(self, player : Player, action : Action, amount : int):
         if action == Action.SKIP:
-            self._skip(player)
+            return self._skip(player)
         else:
             return False, f'это действие сейчас недоступно'
 
@@ -74,11 +74,11 @@ class StockCard(Card):
         return actions
         
     def get_card_info(self):
-        card_info = f"\ttitle : {self.title}\n\tdescription : {self.description[:40]}..."
-        item_info = f"\n\titem : "\
-                            f"\n\t\tname : {self.stock_item.name}"\
-                            f"\n\t\tprice : {self.stock_item.price}"\
-                            f"\n\t\tquantity : {self.stock_item.quantity}"
+        card_info = f"title : {self.title}\ndescription : {self.description}"
+        item_info = f"\n\nitem : "\
+                            f"\n\tname : {self.stock_item.name}"\
+                            f"\n\tprice : {self.stock_item.price}"\
+                            f"\n\tquantity : {self.stock_item.quantity}"
         return card_info + item_info
 
     def execute(self, player : Player, action : Action, amount : int):
@@ -137,14 +137,14 @@ class PropertyCard(Card):
         return actions
     
     def get_card_info(self):
-        card_info = f"\ttitle : {self.title}\n\tdescription : {self.description[:40]}..."
-        item_info = f"\n\titem : "\
-                            f"\n\t\tname : {self.property_item.name}"\
-                            f"\n\t\tprice : {self.property_item.price}"\
-                            f"\n\t\tmortgage : {self.property_item.mortgage}"\
-                            f"\n\t\tdown_payment : {self.property_item.down_payment}"\
-                            f"\n\t\tcash_flow : {self.property_item.cash_flow}"\
-                            f"\n\t\tbed : {self.property_item.bed}, bath : {self.property_item.bath}"
+        card_info = f"title : {self.title}\ndescription : {self.description}"
+        item_info = f"\n\nitem : "\
+                            f"\n\tname : {self.property_item.name}"\
+                            f"\n\tprice : {self.property_item.price}"\
+                            f"\n\tmortgage : {self.property_item.mortgage}"\
+                            f"\n\tdown_payment : {self.property_item.down_payment}"\
+                            f"\n\tcash_flow : {self.property_item.cash_flow}"\
+                            f"\n\tbed : {self.property_item.bed}, bath : {self.property_item.bath}"
         return card_info + item_info
 
     def execute(self, player : Player, action : Action, amount : int):
@@ -184,13 +184,13 @@ class BusinessCard(Card):
         return actions
         
     def get_card_info(self):
-        card_info = f"\ttitle : {self.title}\n\tdescription : {self.description[:40]}..."
-        item_info = f"\n\titem : "\
-                            f"\n\t\tname : {self.business_item.name}"\
-                            f"\n\t\tprice : {self.business_item.price}"\
-                            f"\n\t\tmortgage : {self.business_item.mortgage}"\
-                            f"\n\t\tdown_payment : {self.business_item.down_payment}"\
-                            f"\n\t\tcash_flow : {self.business_item.cash_flow}"
+        card_info = f"title : {self.title}\ndescription : {self.description}"
+        item_info = f"\n\nitem : "\
+                            f"\n\tname : {self.business_item.name}"\
+                            f"\n\tprice : {self.business_item.price}"\
+                            f"\n\tmortgage : {self.business_item.mortgage}"\
+                            f"\n\tdown_payment : {self.business_item.down_payment}"\
+                            f"\n\tcash_flow : {self.business_item.cash_flow}"
         return card_info + item_info
 
     def execute(self, player : Player, action : Action, amount : int):
@@ -213,7 +213,8 @@ class BusinessCard(Card):
 
     def _sell(self, player : Player):
         return False, f'это действие сейчас недоступно, продажа квартиры пока планируется отдельной картой'
-    
+
+# TODO add card
 class СharityCard(Card):
     def __init__(self, title, description, charity_item : СharityItem):
         super().__init__(title, description)

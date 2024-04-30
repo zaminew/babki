@@ -57,7 +57,7 @@ class Game:
 
         # TODO добавь событий
 
-        self.Deck = [self.expense_cards, self.stock_cards, self.property_cards, self.business_cards]
+        self.Deck = [self.expense_cards, self.stock_cards, self.property_cards, self.business_cards, [SalaryCard('День зарплаты', 'долгожданная получка у вас в кармане')]]
         # NOTE группы событий для режима с регулярными типами событий. вариант группировать словари или другой вариант ставить тэги 
 
         print('\033[35m' + f"создана новая игра с параметрами {self.settings.__str__()}" + '\033[0m')

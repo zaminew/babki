@@ -24,6 +24,34 @@ class Card:
     def execute(self, player : Player, action : Action, amount : int):
         pass
 
+class SalaryCard(Card):
+    def __init__(self, title, description):
+        super().__init__(title, description)
+
+    def get_available_actions(self, player : Player):
+        actions = ()
+        if False:
+            actions += (Action.BUY,)
+        if False:
+            actions += (Action.SELL,)
+        if True:
+            actions += (Action.SKIP,)
+        return actions
+    
+    def get_card_info(self):
+        card_info = f"title : {self.title}\ndescription : {self.description}"
+        return card_info
+
+    def execute(self, player : Player, action : Action, amount : int):
+        if action == Action.SKIP:
+            return self._skip(player)
+        else:
+            return False, f'это действие сейчас недоступно'
+
+    def _skip(self, player : Player):
+        player.balance += player.salary_level
+        return True, f'Вы получили зарплату {player.salary_level}'
+
 class ExpenseCard(Card):
     def __init__(self, title, description, price, child):
         super().__init__(title, description)

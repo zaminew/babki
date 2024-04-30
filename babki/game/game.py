@@ -4,14 +4,14 @@ import os
 from typing import List
 
 from player import Player
-from event import *
-from strategies import *
+from item import *
+from card import *
 from game_setting import GameSettings
 from json_loader import JsonLoader
-
+from action import Action
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-events_file_Path = os.path.join(current_dir, 'data/events.json')
+cards_file_Path = os.path.join(current_dir, 'data/cards.json')
 
 class Game:
     def __init__(self, settings: GameSettings, players : List[Player]):
@@ -21,38 +21,47 @@ class Game:
         self.players : List[Player] = players
         # FIXME v временное поле
         self.player : Player = players[0]
-        self.events_data : List[Event] = []
-        self.current_event : Event = None # FIXME still needed?
+        self.events_data : List[Item] = []
+        self.current_card : Card = None 
         self.current_step = 0
         self.months_passed = 0
         self.is_game_over = False
 
-        self.expence_events : List[Event] = []
-        self.stock_events : List[Event] = []
-        self.property_events : List[Event] = []
-        self.business_events : List[Event] = []
+        self.expense_cards : List[ExpenseCard] = []
+        self.stock_cards : List[StockCard] = []
+        self.property_cards: List[PropertyCard] = []
+        self.business_cards : List[BusinessCard] = []
 
-        self.group_events : List[List[Event]] = []
+        self.Deck : List[List[Card]] = []
 
         # Создать список объектов Event, ExpenseEvent, StockEvent из данных JSON
-        data = JsonLoader.load(events_file_Path)       
+        data = JsonLoader.load(cards_file_Path)       
         
-        for item in data["doodads"]:
-            self.expence_events.append(ExpenseEvent(item["title"], "", item["cost"], item["costMin"], item["costMax"], item["costStep"], item["child"]))
-        for item in data["stocks"]:
-            self.stock_events.append(StockEvent(item["symbol"], item["flavor"], item["price"], item["quantity"]))
-        for item in data["Property"]:
-            self.property_events.append(PropertyEvent("недвижимость", item["title"], item["flavorText"], item["cost"], item["mortgage"], item["downPayment"], item["cashFlow"], item["bed"], item["bath"]))
-        for item in data["businesses"]:
-            self.business_events.append(BusinessEvent("Бизнес", "Покупка/продажа бизнеса", item["title"], item["flavorText"], item["cost"], item["mortgage"], item["downPayment"], item["cashFlow"]))
+        for card in data["expense_cards"]:
+            self.expense_cards.append(ExpenseCard(card['title'], card['description'], card['price'], card['child']))
+
+        for card in data["stock_cards"]:
+            item_data = card["item"]
+            item = StockItem(item_data["name"], item_data["price"], item_data["quantity"])
+            self.stock_cards.append(StockCard(card['title'], card['description'], item))
+
+        for card in data["property_cards"]:
+            item_data = card["item"]
+            item = PropertyItem(item_data["name"], item_data["price"], item_data["mortgage"], item_data["down_payment"], item_data["cash_flow"], item_data["bed"], item_data["bath"])
+            self.property_cards.append(PropertyCard(card['title'], card['description'], item))
+
+        for card in data["business_cards"]:
+            item_data = card["item"]
+            item = BusinessItem(item_data["name"], item_data["price"], item_data["mortgage"], item_data["down_payment"], item_data["cash_flow"])
+            self.business_cards.append(BusinessCard(card['title'], card['description'], item))
 
         # TODO добавь событий
 
-        self.group_events = [self.expence_events, self.stock_events, self.property_events, self.business_events]
-        #self.group_events = [self.stock_events]
+        self.Deck = [self.expense_cards, self.stock_cards, self.property_cards, self.business_cards]
         # NOTE группы событий для режима с регулярными типами событий. вариант группировать словари или другой вариант ставить тэги 
 
         print('\033[35m' + f"создана новая игра с параметрами {self.settings.__str__()}" + '\033[0m')
+
 
     def start(self):
 
@@ -68,23 +77,23 @@ class Game:
         self.is_game_over = True
         # TODO логика вывода статистики и завершения игры
 
-    def get_new_event(self) -> Event:
-        self.current_event = random.choice(random.choice(self.group_events))
-        return self.current_event
+    def get_new_card(self) -> Card:
+        self.current_card = random.choice(random.choice(self.Deck))
+        return self.current_card
 
-    def print_event(self, event : Event):
-        if event:
+    def print_event(self, card : Card):
+        if card:
             color = '\033[37m'
-            if isinstance(event, ExpenseEvent):
+            if isinstance(card, ExpenseCard):
                 color = '\033[31m'
-            elif isinstance(event, StockEvent):
+            elif isinstance(card, StockCard):
                 color = '\033[33m'
-            elif isinstance(event, PropertyEvent):
+            elif isinstance(card, PropertyCard):
                 color = '\033[36m'
-            elif isinstance(event, BusinessEvent):
+            elif isinstance(card, BusinessCard):
                 color = '\033[34m'
             print(f"\033[31m баланс игрока : {self.player.balance}" + '\033[0m')
-            print(color + f"current event : \n{event.get_event_info()}" + '\033[0m')
+            print(color + f"current card : \n{card.get_card_info()}" + '\033[0m')
             '''
             actions = event.get_actions(self.player)
             if actions:
@@ -103,55 +112,47 @@ class Game:
 
     def play_step(self, ch):
         act : Action = None
-        if ch == '1':
+        if ch == 'BUY':
             act = Action.BUY
-            amount = int(input('количество для покупки -> '))
-        elif ch == '2':
+        elif ch == 'SELL':
             act = Action.SELL
-            amount = int(input('количество для продажи -> '))
-        elif ch == '3':
-            act = Action.CHECK
-            amount = 1
-        elif ch == '4':
+        elif ch == 'SKIP':
+            act = Action.SKIP
+        elif ch == 'CHECK':
             #print(self.player.get_assets_value())
             print(self.player.get_assets_info())
 
-        strategy = StrategyFactory.get_strategy(act)
         if act:
-            res = strategy.execute(self.player, self.current_event, amount)
+            res = self.current_card.execute(self.player, act, 1)
+            print("-------------------->" + str(res))
             if res[0]:
                 print(res[1])
-                self.print_event(self.get_new_event())
+                self.print_event(self.get_new_card())
             else:
                 print(res[1])
-
-    def play_month(self):
-        event = random.choice(self.events_data)
-        act = event.get_actions(self.player)
-        print(f"name {event.name}")
-        if act.buy:
-            print(" BUY ")
-            print(act.buy_amount)
-        if act.sell:
-            print(" SELL ")
-            print(act.sell_amount)
-        if act.check:
-            print(" CHECK ")
-
         
-        event.execute_action(self.player, Action(False, 0, False, 0, True))
-        if event.input_requires:
-            print("")
-        self.current_step += 1
+        allow = self.current_card.get_available_actions(self.player)
         
-        print(f"Step: {self.current_step}")
-        if self.current_step % 4 == 0:
-            print("PAYDAY")
-            self.player.balance += self.player.salary_level
-        print(f"Balance: {self.player.balance}")
-        
+        return {
+            'actions': {
+                'buy': True if Action.BUY in allow else False,
+                'sell': True if Action.SELL in allow else False,
+                'skip': True if Action.SKIP in allow else False
+            },
+            'player': {
+                'balance': self.player.balance,
+                'salary_level': self.player.salary_level,
+                'name': self.player.name,
+                'stocks': self.player.get_assets_info()
+            },
+            'card': self.current_card.get_card_info(),
+            "label_text_left": f"{'BUY' if Action.BUY in allow else 'NON'}: {random.randint(1, 100)}",
+            "label_text_center": f"{'SELL' if Action.SELL in allow else 'NON'}: {random.randint(1, 100)}",
+            "label_text_right": f"{'SKIP' if Action.SKIP in allow else 'NON'}: {random.randint(1, 100)}"
+        }
 
 #NOTE в самом событии будет указано что можно делать с этим событием и какие кнопки будут доступны а так же доступное колличество
 
 # NOTE если будут события разного типа на одном шаге то можно попробовтаь написать функцию 
     # которая будет проверять как давно события этого типа генерировались и если давно то повышать вероятность
+    # особенно чтобы не было два события подряд maybe

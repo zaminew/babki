@@ -7,4 +7,4 @@ class EnumStr(Enum):
 class Action(EnumStr):
     BUY = 'buy'
     SELL = 'sell'
-    CHECK = 'check'
+    SKIP = 'skip'

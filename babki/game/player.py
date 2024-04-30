@@ -1,5 +1,5 @@
 from typing import List
-from event import *
+from item import *
 
 class Player:
     def __init__(self, name, balance, salary_level):
@@ -10,9 +10,9 @@ class Player:
         self.child : bool = False
         self.is_ready : bool = False
 
-        self.properties : List[PropertyEvent] = []
-        self.stocks : List[StockEvent] = []
-        self.businesses : List[BusinessEvent] = []
+        self.properties : List[PropertyItem] = []
+        self.stocks : List[StockItem] = []
+        self.businesses : List[BusinessItem] = []
 
     def take_credit(self, amount):
         pass
@@ -24,11 +24,29 @@ class Player:
         pass
 
     def get_assets_value(self):
-        return sum(property.cost for property in self.properties) + sum(stock.price for stock in self.stocks) + sum(business.cost for business in self.businesses)
+        return sum(property.price for property in self.properties) + sum(stock.price for stock in self.stocks) + sum(business.price for business in self.businesses)
 
     def get_assets_info(self):
         return  {
-            "properties": [property.name for property in self.properties],
+            "properties": [
+                {
+                    "name": property.name,
+                    "price": property.price,
+                    "mortgage": property.mortgage,
+                    "down_payment": property.down_payment,
+                    "cash_flow": property.cash_flow,
+                    "bed": property.bed,
+                    "bath": property.bath
+                } for property in self.properties
+            ],
             "stocks": [{"name": stock.name, "quantity": stock.quantity} for stock in self.stocks],
-            "businesses": [business.name for business in self.businesses]
+            "businesses": [
+                {
+                    "name": business.name,
+                    "price": business.price,
+                    "mortgage": business.mortgage,
+                    "down_payment": business.down_payment,
+                    "cash_flow": business.cash_flow
+                } for business in self.businesses
+            ]
         }

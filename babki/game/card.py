@@ -18,7 +18,7 @@ class Card:
             actions += (Action.SKIP,)
         return actions
 
-    def get_card_info(self):
+    def get_card_info(self, player : Player):
         return f"\ttitle : {self.title} \n\tdesc : {self.description}"
 
     def execute(self, player : Player, action : Action, amount : int):
@@ -38,9 +38,12 @@ class SalaryCard(Card):
             actions += (Action.SKIP,)
         return actions
     
-    def get_card_info(self):
+    def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"
-        return card_info
+        player_info = f'ваш баланс: {player.balance}'\
+                        f'\n+денежный поток: {player.get_cash_flow()}'\
+                        f'\n\nновый баланс: {player.balance+player.get_cash_flow()}'
+        return card_info + player_info
 
     def execute(self, player : Player, action : Action, amount : int):
         if action == Action.SKIP:
@@ -49,8 +52,9 @@ class SalaryCard(Card):
             return False, f'это действие сейчас недоступно'
 
     def _skip(self, player : Player):
-        player.balance += player.salary_level
-        return True, f'Вы получили зарплату {player.salary_level}'
+        cash_flow = player.get_cash_flow()
+        player.balance += cash_flow
+        return True, f'Вы получили {cash_flow}'
 
 class ExpenseCard(Card):
     def __init__(self, title, description, price, child):
@@ -68,7 +72,7 @@ class ExpenseCard(Card):
             actions += (Action.SKIP,)
         return actions
     
-    def get_card_info(self):
+    def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"\
                     f"\n\nprice : {self.price}, child : {self.child}"
         return card_info
@@ -101,7 +105,7 @@ class StockCard(Card):
             actions += (Action.SKIP,)
         return actions
         
-    def get_card_info(self):
+    def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"
         item_info = f"\n\nitem : "\
                             f"\n\tname : {self.stock_item.name}"\
@@ -110,11 +114,13 @@ class StockCard(Card):
         return card_info + item_info
 
     def execute(self, player : Player, action : Action, amount : int):
-        if amount <= 0:
-            return False, f'Колличество должно быть больше 0'
         if action == Action.BUY:
+            if amount <= 0:
+                return False, f'Колличество должно быть больше 0'
             return self._buy(player, amount)
         elif action == Action.SELL:
+            if amount <= 0:
+                return False, f'Колличество должно быть больше 0'
             return self._sell(player, amount)
         elif action == Action.SKIP:
             return True, f'Вы пропустили это событие'
@@ -126,9 +132,19 @@ class StockCard(Card):
             return False, f'Вы не можете купить {self.stock_item.name} в количестве {amount}, в продаже доступно только {self.stock_item.quantity}'
         if player.balance >= self.stock_item.price * amount:
             player.balance -= self.stock_item.price * amount
-            event_index = next((index for index, player_stock in enumerate(player.stocks) if player_stock.name == self.stock_item.name), None)
-            if event_index is not None:
-                player.stocks[event_index].quantity += amount
+            item_index = next((index for index, player_stock in enumerate(player.stocks) if player_stock.name == self.stock_item.name), None)
+            if item_index is not None:
+                old_price = player.stocks[item_index].price
+                old_quantity = player.stocks[item_index].quantity
+                new_price = self.stock_item.price
+                new_quantity = amount
+                
+                total_value = (old_price * old_quantity) + (new_price * new_quantity)
+                total_quantity = old_quantity + new_quantity
+                average_price = int(round(total_value / total_quantity, 0))
+                
+                player.stocks[item_index].quantity += amount
+                player.stocks[item_index].price = average_price
             else:
                 player.stocks.append(self.stock_item.copy(quantity=amount))
             return True, f'Вы купили {self.stock_item.name} в количестве {amount} по цене {self.stock_item.price} на сумму {self.stock_item.price*amount}'
@@ -136,15 +152,15 @@ class StockCard(Card):
             return False, f'Вам не хватает {self.stock_item.price * amount - player.balance} для покупки {amount}x {self.stock_item.name} по {self.stock_item.price}, за {self.stock_item.price * amount}'
 
     def _sell(self, player : Player, amount : int):
-        event_index = next((index for index, player_stock in enumerate(player.stocks) if player_stock.name == self.stock_item.name), None)
-        if event_index is not None:
-            player_stock = player.stocks[event_index]
+        item_index = next((index for index, player_stock in enumerate(player.stocks) if player_stock.name == self.stock_item.name), None)
+        if item_index is not None:
+            player_stock = player.stocks[item_index]
             if player_stock.quantity < amount:
                 return False, f'Вы не можете продать {self.stock_item.name} в количестве {amount}, у вас есть только {player_stock.quantity}'
             player_stock.quantity -= amount
             player.balance += self.stock_item.price * amount
             if player_stock.quantity <= 0:
-                del player.stocks[event_index]
+                del player.stocks[item_index]
             return True, f'Вы продали {self.stock_item.name} в количестве {amount} по цене {self.stock_item.price} на сумму {self.stock_item.price*amount}'
         else:
             return False, f'У вас нет {self.stock_item.name}'
@@ -164,7 +180,7 @@ class PropertyCard(Card):
             actions += (Action.SKIP,)
         return actions
     
-    def get_card_info(self):
+    def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"
         item_info = f"\n\nitem : "\
                             f"\n\tname : {self.property_item.name}"\
@@ -211,7 +227,7 @@ class BusinessCard(Card):
             actions += (Action.SKIP,)
         return actions
         
-    def get_card_info(self):
+    def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"
         item_info = f"\n\nitem : "\
                             f"\n\tname : {self.business_item.name}"\
@@ -258,7 +274,7 @@ class СharityCard(Card):
             actions += (Action.SKIP,)
         return actions
         
-    def get_card_info(self):
+    def get_card_info(self, player : Player):
         return f"\ttitle : {self.title}"
 
     def execute(self, player : Player, action : Action, amount : int):
@@ -288,7 +304,7 @@ class InsuranceCard(Card):
             actions += (Action.SKIP,)
         return actions
         
-    def get_card_info(self):
+    def get_card_info(self, player : Player):
         return f"\ttitle : {self.title}"
 
     def execute(self, player : Player, action : Action, amount : int):

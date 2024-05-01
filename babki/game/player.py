@@ -20,15 +20,19 @@ class Player:
     def repay_credit(self, amount):
         pass
 
-    def calculate_balance(self):
-        pass
-
+    def get_cash_flow(self):
+        flow = self.salary_level
+        flow += sum(item.cash_flow for item in self.properties)
+        flow += sum(item.cash_flow for item in self.businesses)
+        #new_balance += sum(item.cash_flow for item in self.stocks)
+        return flow
+        
     def get_assets_value(self):
         return sum(property.price for property in self.properties) + sum(stock.price for stock in self.stocks) + sum(business.price for business in self.businesses)
 
     def get_assets_info(self):
         return  {
-            "properties": [
+            "property": [
                 {
                     "name": property.name,
                     "price": property.price,
@@ -39,7 +43,7 @@ class Player:
                     "bath": property.bath
                 } for property in self.properties
             ],
-            "stocks": [{"name": stock.name, "quantity": stock.quantity} for stock in self.stocks],
+            "stocks": [{"name": stock.name, "quantity": stock.quantity, "price": stock.price} for stock in self.stocks],
             "businesses": [
                 {
                     "name": business.name,

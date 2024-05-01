@@ -93,7 +93,7 @@ class Game:
             elif isinstance(card, BusinessCard):
                 color = '\033[34m'
             print(f"\033[31m баланс игрока : {self.player.balance}" + '\033[0m')
-            print(color + f"current card : \n{card.get_card_info()}" + '\033[0m')
+            print(color + f"current card : \n{card.get_card_info(self.player)}" + '\033[0m')
             '''
             actions = event.get_actions(self.player)
             if actions:
@@ -110,7 +110,7 @@ class Game:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
             '''
 
-    def play_step(self, ch):
+    def play_step(self, ch, quantity):
         act : Action = None
         if ch == 'BUY':
             act = Action.BUY
@@ -123,13 +123,14 @@ class Game:
             print(self.player.get_assets_info())
 
         if act:
-            res = self.current_card.execute(self.player, act, 1)
+            res = self.current_card.execute(self.player, act, quantity)
             print("-------------------->" + str(res))
             if res[0]:
                 print(res[1])
                 self.print_event(self.get_new_card())
             else:
                 print(res[1])
+                return {'error': res[1]}
         
         allow = self.current_card.get_available_actions(self.player)
         
@@ -142,10 +143,11 @@ class Game:
             'player': {
                 'balance': self.player.balance,
                 'salary_level': self.player.salary_level,
+                'cash_flow': self.player.get_cash_flow(),
                 'name': self.player.name,
-                'stocks': self.player.get_assets_info()
+                'ownership': self.player.get_assets_info()
             },
-            'card': self.current_card.get_card_info(),
+            'card': self.current_card.get_card_info(self.player),
             "label_text_left": f"{'BUY' if Action.BUY in allow else 'NON'}: {random.randint(1, 100)}",
             "label_text_center": f"{'SELL' if Action.SELL in allow else 'NON'}: {random.randint(1, 100)}",
             "label_text_right": f"{'SKIP' if Action.SKIP in allow else 'NON'}: {random.randint(1, 100)}"

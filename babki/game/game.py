@@ -9,6 +9,7 @@ from card import *
 from game_setting import GameSettings
 from json_loader import JsonLoader
 from action import Action
+from typing import Dict
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 cards_file_Path = os.path.join(current_dir, 'data/cards.json')
@@ -67,21 +68,21 @@ class Game:
 
         while not all(player.is_ready for player in self.players):
             char = input('Подтвердите готовность - введите y или r ').lower()
-            if char == 'y' or char == 'r': 
+            if char == 'y' or char == 'r':
                 print('\033[35m' + 'игра началась' + '\033[0m')
                 break
-        
+
             # TODO добавить логику ожидания входа или готовности игроков
 
     def end_game(self):
         self.is_game_over = True
         # TODO логика вывода статистики и завершения игры
 
-    def get_new_card(self) -> Card:
+    def set_new_card(self) -> Card:
         self.current_card = random.choice(random.choice(self.Deck))
         return self.current_card
 
-    def print_event(self, card : Card):
+    def print_card_in_console(self, card : Card):
         if card:
             color = '\033[37m'
             if isinstance(card, ExpenseCard):
@@ -110,35 +111,26 @@ class Game:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
             '''
 
-    def play_step(self, ch, quantity):
-        act : Action = None
-        if ch == 'BUY':
-            act = Action.BUY
-        elif ch == 'SELL':
-            act = Action.SELL
-        elif ch == 'SKIP':
-            act = Action.SKIP
-        elif ch == 'CHECK':
-            #print(self.player.get_assets_value())
-            print(self.player.get_assets_info())
-
-        if act:
-            res = self.current_card.execute(self.player, act, quantity)
-            print("-------------------->" + str(res))
-            if res[0]:
-                print(res[1])
-                self.print_event(self.get_new_card())
-            else:
-                print(res[1])
-                return {'error': res[1]}
+    def play_step(self, user_action : Action):
+        result = self.current_card.execute(self.player, user_action)
+        if result[0]:
+            print(result[1])
+            self.print_card_in_console(self.set_new_card())
+            return True, str(result[1])
+        else:
+            print(result[1])
+            return False, 'error : ' + str(result[1])
         
-        allow = self.current_card.get_available_actions(self.player)
+    
+    def get_data(self) -> Dict[str, int]:
+        available_action = self.current_card.get_available_action(self.player)
+        print(available_action)
         
         return {
             'actions': {
-                'buy': True if Action.BUY in allow else False,
-                'sell': True if Action.SELL in allow else False,
-                'skip': True if Action.SKIP in allow else False
+                'buy': available_action.buy,
+                'sell': available_action.sell,
+                'skip': available_action.skip,
             },
             'player': {
                 'balance': self.player.balance,
@@ -147,10 +139,7 @@ class Game:
                 'name': self.player.name,
                 'ownership': self.player.get_assets_info()
             },
-            'card': self.current_card.get_card_info(self.player),
-            "label_text_left": f"{'BUY' if Action.BUY in allow else 'NON'}: {random.randint(1, 100)}",
-            "label_text_center": f"{'SELL' if Action.SELL in allow else 'NON'}: {random.randint(1, 100)}",
-            "label_text_right": f"{'SKIP' if Action.SKIP in allow else 'NON'}: {random.randint(1, 100)}"
+            'card': self.current_card.get_card_info(self.player)
         }
 
 #NOTE в самом событии будет указано что можно делать с этим событием и какие кнопки будут доступны а так же доступное колличество

@@ -1,6 +1,6 @@
 from item import *
 from player import Player
-from action import Action
+from action import *
 
 class Card:
     def __init__(self, title, description):
@@ -8,35 +8,28 @@ class Card:
         self.description = description
         self.input_requires = False
 
-    def get_available_actions(self, player : Player):
-        actions = ()
+    def get_available_action(self, player : Player) -> Action:
+        action = Action()
         if False:
-            actions += (Action.BUY,)
+            action.buy = 0
         if False:
-            actions += (Action.SELL,)
+            action.sell = 0
         if False:
-            actions += (Action.SKIP,)
-        return actions
+            action.skip = 0
+        return action
 
     def get_card_info(self, player : Player):
         return f"\ttitle : {self.title} \n\tdesc : {self.description}"
 
-    def execute(self, player : Player, action : Action, amount : int):
+    def execute(self, player : Player, action : Action):
         pass
 
 class SalaryCard(Card):
     def __init__(self, title, description):
         super().__init__(title, description)
 
-    def get_available_actions(self, player : Player):
-        actions = ()
-        if False:
-            actions += (Action.BUY,)
-        if False:
-            actions += (Action.SELL,)
-        if True:
-            actions += (Action.SKIP,)
-        return actions
+    def get_available_action(self, player : Player) -> Action:
+        return Action(skip=1)
     
     def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"
@@ -45,8 +38,8 @@ class SalaryCard(Card):
                         f'\n\nновый баланс: {player.balance+player.get_cash_flow()}'
         return card_info + player_info
 
-    def execute(self, player : Player, action : Action, amount : int):
-        if action == Action.SKIP:
+    def execute(self, player : Player, action : Action):
+        if action.skip:
             return self._skip(player)
         else:
             return False, f'это действие сейчас недоступно'
@@ -62,23 +55,19 @@ class ExpenseCard(Card):
         self.price = price
         self.child = child
 
-    def get_available_actions(self, player : Player):
-        actions = ()
-        if False:
-            actions += (Action.BUY,)
-        if False:
-            actions += (Action.SELL,)
+    def get_available_action(self, player : Player) -> Action:
+        action = Action()
         if player.balance >= self.price:
-            actions += (Action.SKIP,)
-        return actions
+            action.skip = 1
+        return action
     
     def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"\
                     f"\n\nprice : {self.price}, child : {self.child}"
         return card_info
 
-    def execute(self, player : Player, action : Action, amount : int):
-        if action == Action.SKIP:
+    def execute(self, player : Player, action : Action):
+        if action.skip:
             return self._skip(player)
         else:
             return False, f'это действие сейчас недоступно'
@@ -95,15 +84,15 @@ class StockCard(Card):
         super().__init__(title, description)
         self.stock_item : StockItem = stock_item
 
-    def get_available_actions(self, player : Player):
-        actions = ()
-        if player.balance >= self.stock_item.price:
-            actions += (Action.BUY,)
-        if any(player_stock.name == self.stock_item.name for player_stock in player.stocks):
-            actions += (Action.SELL,)
-        if True:
-            actions += (Action.SKIP,)
-        return actions
+    def get_available_action(self, player : Player) -> Action:
+        action = Action()
+        enough_for_buy = player.balance // self.stock_item.price
+        available_for_buy = self.stock_item.quantity
+        action.buy = min(enough_for_buy, available_for_buy)
+        item_index = player.get_stock_index_by_name(self.stock_item.name)
+        action.sell = player.stocks[item_index].quantity if item_index is not None else 0
+        action.skip = 1
+        return action
         
     def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"
@@ -113,16 +102,12 @@ class StockCard(Card):
                             f"\n\tquantity : {self.stock_item.quantity}"
         return card_info + item_info
 
-    def execute(self, player : Player, action : Action, amount : int):
-        if action == Action.BUY:
-            if amount <= 0:
-                return False, f'Колличество должно быть больше 0'
-            return self._buy(player, amount)
-        elif action == Action.SELL:
-            if amount <= 0:
-                return False, f'Колличество должно быть больше 0'
-            return self._sell(player, amount)
-        elif action == Action.SKIP:
+    def execute(self, player : Player, action : Action):
+        if action.buy:
+            return self._buy(player, action.buy)
+        elif action.sell:
+            return self._sell(player, action.sell)
+        elif action.skip:
             return True, f'Вы пропустили это событие'
         else:
             return False, f'это действие сейчас недоступно'
@@ -132,7 +117,7 @@ class StockCard(Card):
             return False, f'Вы не можете купить {self.stock_item.name} в количестве {amount}, в продаже доступно только {self.stock_item.quantity}'
         if player.balance >= self.stock_item.price * amount:
             player.balance -= self.stock_item.price * amount
-            item_index = next((index for index, player_stock in enumerate(player.stocks) if player_stock.name == self.stock_item.name), None)
+            item_index = player.get_stock_index_by_name(self.stock_item.name)
             if item_index is not None:
                 old_price = player.stocks[item_index].price
                 old_quantity = player.stocks[item_index].quantity
@@ -170,15 +155,12 @@ class PropertyCard(Card):
         super().__init__(title, description)
         self.property_item : PropertyItem = property_item
 
-    def get_available_actions(self, player : Player):
-        actions = ()
+    def get_available_action(self, player : Player) -> Action:
+        action = Action()
         if player.balance >= self.property_item.down_payment:
-            actions += (Action.BUY,)
-        if False:
-            actions += (Action.SELL,)
-        if True:
-            actions += (Action.SKIP,)
-        return actions
+            action.buy = 1
+        action.skip = 1
+        return action
     
     def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"
@@ -191,15 +173,13 @@ class PropertyCard(Card):
                             f"\n\tbed : {self.property_item.bed}, bath : {self.property_item.bath}"
         return card_info + item_info
 
-    def execute(self, player : Player, action : Action, amount : int):
-        if action == Action.BUY:
+    def execute(self, player : Player, action : Action):
+        if action.buy:
             return self._buy(player)
-        elif action == Action.SELL:
+        elif action.sell:
             return self._sell(player)
-        elif action == Action.SKIP:
+        elif action.skip:
             return True, f'Вы пропустили это событие'
-        else:
-            return False, f'это действие сейчас недоступно'
 
     def _buy(self, player : Player):
         if player.balance >= self.property_item.down_payment:
@@ -217,15 +197,12 @@ class BusinessCard(Card):
         super().__init__(title, description)
         self.business_item : BusinessItem = business_item
 
-    def get_available_actions(self, player : Player):
-        actions = ()
+    def get_available_action(self, player : Player) -> Action:
+        action = Action()
         if player.balance >= self.business_item.down_payment:
-            actions += (Action.BUY,)
-        if False:
-            actions += (Action.SELL,)
-        if True:
-            actions += (Action.SKIP,)
-        return actions
+            action.buy = 1
+        action.skip = 1
+        return action
         
     def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"
@@ -237,12 +214,12 @@ class BusinessCard(Card):
                             f"\n\tcash_flow : {self.business_item.cash_flow}"
         return card_info + item_info
 
-    def execute(self, player : Player, action : Action, amount : int):
-        if action == Action.BUY:
+    def execute(self, player : Player, action : Action):
+        if action.buy:
             return self._buy(player)
-        elif action == Action.SELL:
+        elif action.sell:
             return self._sell(player)
-        elif action == Action.SKIP:
+        elif action.skip:
             return True, f'Вы пропустили это событие'
         else:
             return False, f'это действие сейчас недоступно'
@@ -264,20 +241,20 @@ class СharityCard(Card):
         super().__init__(title, description)
         self.charity_item : СharityItem = charity_item
 
-    def get_available_actions(self, player : Player):
-        actions = ()
+    def get_available_action(self, player : Player) -> Action:
+        action = Action()
         if False:
-            actions += (Action.BUY,)
+            action.buy = 0
         if False:
-            actions += (Action.SELL,)
-        if False:
-            actions += (Action.SKIP,)
-        return actions
+            action.sell = 0
+        if True:
+            action.skip = 0
+        return action
         
     def get_card_info(self, player : Player):
         return f"\ttitle : {self.title}"
 
-    def execute(self, player : Player, action : Action, amount : int):
+    def execute(self, player : Player, action : Action):
         pass
 
     def _buy(self):
@@ -294,15 +271,15 @@ class InsuranceCard(Card):
         super().__init__(name, description)
         self.insurance_item : InsuranceItem = insurance_item
 
-    def get_available_actions(self, player : Player):
-        actions = ()
+    def get_available_action(self, player : Player):
+        action = Action()
         if False:
-            actions += (Action.BUY,)
+            action.buy = 0
         if False:
-            actions += (Action.SELL,)
-        if False:
-            actions += (Action.SKIP,)
-        return actions
+            action.sell = 0
+        if True:
+            action.skip = 0
+        return action
         
     def get_card_info(self, player : Player):
         return f"\ttitle : {self.title}"

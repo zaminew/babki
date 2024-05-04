@@ -35,7 +35,7 @@ game_settings = GameSettings(6, Speed.NORMAL, Difficulty.MEDIUM, GameType.ONE_FO
 game = Game(game_settings, player_list)
 
 #game.start()
-game.print_event(game.get_new_card())
+game.print_card_in_console(game.set_new_card())
 ch = None
 while True:
     game.play_step(ch)

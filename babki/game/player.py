@@ -13,6 +13,9 @@ class Player:
         self.properties : List[PropertyItem] = []
         self.stocks : List[StockItem] = []
         self.businesses : List[BusinessItem] = []
+        
+    def get_stock_index_by_name(self, name):
+        return next((index for index, player_stock in enumerate(self.stocks) if player_stock.name == name), None)
 
     def take_credit(self, amount):
         pass

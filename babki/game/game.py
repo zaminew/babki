@@ -134,6 +134,7 @@ class Game:
             },
             'player': {
                 'balance': self.player.balance,
+                'loan': self.player.loan,
                 'salary_level': self.player.salary_level,
                 'cash_flow': self.player.get_cash_flow(),
                 'name': self.player.name,

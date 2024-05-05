@@ -8,25 +8,25 @@ from action import Action
 from typing import Dict
 import tkinter.font as tkFont
 
-player_list = [Player("Eugene", 1000000, 1000), Player("Eugene", 10000, 1000)]
+player_list = [Player("Eugene", 100000, 1000), Player("Eugene", 10000, 1000)]
 game_settings = GameSettings(6, Speed.NORMAL, Difficulty.MEDIUM, GameType.ONE_FOR_ALL, GameMode.STABLE_EVENTS, True)
 game = Game(game_settings, player_list)
 
 
-
+# TODO рефакторинг кода чтобы все общение было только через json/dict формат
 def do_action(button):
-    global label_left, label_center, label_right, label_info, game
-    #labels = game.update_labels(button)
-    buy_quantity = buy_scale.get()
-    sell_quantity = sell_scale.get()
     
     data = False, "data is None"
     if button == "BUY":
-        data = game.play_step(Action(buy=buy_quantity))
+        data = game.play_step(Action(buy=buy_scale.get()))
     elif button == "SELL":
-        data = game.play_step(Action(sell=sell_quantity))
+        data = game.play_step(Action(sell=sell_scale.get()))
     elif button == "SKIP":
         data = game.play_step(Action(skip=1))
+    elif button == "TAKE_LOAN":
+        data = game.player.take_loan(take_loan_scale.get())
+    elif button == "REPAY_LOAN":
+        data = game.player.repay_loan(repay_loan_scale.get())
     else:
         data = game.play_step(Action())
     
@@ -56,7 +56,7 @@ def update_labels(data : Dict[str, int]):
     
     label_left.config(text=prep_data)
     label_center.config(text=data["card"])
-    label_right.config(text=f"name: {data['player']['name']}\nsalary: {data['player']['salary_level']}\ncash flow: {data['player']['cash_flow']}\n\nbalance: {data['player']['balance']}")
+    label_right.config(text=f"name: {data['player']['name']}\nsalary: {data['player']['salary_level']}\ncash flow: {data['player']['cash_flow']}\nloan: {data['player']['loan']}\n\nbalance: {data['player']['balance']}")
 
     if data.get('actions'):
         buy = data['actions']['buy']
@@ -122,6 +122,11 @@ listbox.pack(fill=tk.BOTH, expand=True)
 button_frame = tk.Frame(center_frame, bg="#90ee9f", height=200)
 button_frame.pack(side="bottom", fill='x', pady=50)
 
+take_loan_button_frame = tk.Frame(button_frame, bg="#90ee90")
+take_loan_button_frame.pack(side="left", fill='both', expand=True, pady=50)
+repay_loan_button_frame = tk.Frame(button_frame, bg="#90ee90")
+repay_loan_button_frame.pack(side="left", fill='both', expand=True, pady=50)
+
 buy_button_frame = tk.Frame(button_frame, bg="#90ee9f")
 buy_button_frame.pack(side="left", fill='both', expand=True, pady=50)
 sell_button_frame = tk.Frame(button_frame, bg="#90ee9f")
@@ -130,12 +135,22 @@ skip_button_frame = tk.Frame(button_frame, bg="#90ee9f")
 skip_button_frame.pack(side="left", fill='both', expand=True, pady=50)
 
 
-buy_scale = tk.Scale(buy_button_frame, from_=1, to=1, orient="horizontal", label="Quantity")
+take_loan_scale = tk.Scale(take_loan_button_frame, from_=1, to=10000, orient="horizontal", label="сумма кредита")
+take_loan_scale.pack(side='top', padx=5, pady=5, fill='x', expand=True)
+take_loan_button = tk.Button(take_loan_button_frame, text="take L", command=lambda: do_action("TAKE_LOAN"))
+take_loan_button.pack(side='bottom', padx=5, pady=5, fill='y', expand=True)
+
+repay_loan_scale = tk.Scale(repay_loan_button_frame, from_=1, to=10000, orient="horizontal", label="сумма погашения")
+repay_loan_scale.pack(side='top', padx=5, pady=5, fill='x', expand=True)
+repay_loan_button = tk.Button(repay_loan_button_frame, text="repay L", command=lambda: do_action("REPAY_LOAN"))
+repay_loan_button.pack(side='bottom', padx=5, pady=5, fill='y', expand=True)
+
+buy_scale = tk.Scale(buy_button_frame, from_=1, to=1, orient="horizontal", label="количество")
 buy_scale.pack(side='top', padx=5, pady=5, fill='x', expand=True)
 buy_button = tk.Button(buy_button_frame, text="BUY", command=lambda: do_action("BUY"))
 buy_button.pack(side='bottom', padx=5, pady=5, fill='y', expand=True)
 
-sell_scale = tk.Scale(sell_button_frame, from_=1, to=1, orient="horizontal", label="Quantity")
+sell_scale = tk.Scale(sell_button_frame, from_=1, to=1, orient="horizontal", label="количество")
 sell_scale.pack(side='top', padx=5, pady=5, fill='x', expand=True)
 sell_button = tk.Button(sell_button_frame, text="SELL", command=lambda: do_action("SELL"))
 sell_button.pack(side='bottom', padx=5, pady=5, fill='y', expand=True)

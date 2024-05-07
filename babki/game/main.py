@@ -38,5 +38,5 @@ game = Game(game_settings, player_list)
 game.print_card_in_console(game.set_new_card())
 ch = None
 while True:
-    game.play_step(ch)
+    game.execute_player_action(ch)
     ch = input("Press Enter to continue...\n")

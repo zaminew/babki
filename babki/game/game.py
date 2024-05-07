@@ -111,20 +111,43 @@ class Game:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
             '''
 
-    def play_step(self, user_action : Action):
-        result = self.current_card.execute(self.player, user_action)
-        if result[0]:
-            print(result[1])
-            self.print_card_in_console(self.set_new_card())
-            return True, str(result[1])
+    def execute_player_action(self, user_action_data : Dict[str, int]):
+        print(f'---> {user_action_data}')
+        action = Action()
+        amount = user_action_data.get('amount', 0)
+        
+        if 'action' in user_action_data:
+            if user_action_data['action'] == 'buy':
+                action.buy = amount
+                result = self.current_card.execute(self.player, action)
+            elif user_action_data['action'] == 'sell':
+                action.sell = amount
+                result = self.current_card.execute(self.player, action)
+            elif user_action_data['action'] == 'skip':
+                action.skip = 1
+                result = self.current_card.execute(self.player, action)
+            elif user_action_data['action'] == 'take_loan':
+                result = self.player.loan.take(amount)
+            elif user_action_data['action'] == 'repay_loan':
+                result = self.player.loan.repay(amount)  
+            else:
+                result = False, 'неизвестная команда для исполнения'
+        
+        if result:
+            print(f'------> {result}')
+            if result[0]:
+                if action.is_active():
+                    self.print_card_in_console(self.set_new_card())
+                return True, str(result[1])
+            else:
+                return False, result[1]
         else:
-            print(result[1])
-            return False, 'error : ' + str(result[1])
+            print(f'------x result не определен')
         
     
     def get_data(self) -> Dict[str, int]:
         available_action = self.current_card.get_available_action(self.player)
-        print(available_action)
+        #print(available_action)
         
         return {
             'actions': {
@@ -134,7 +157,7 @@ class Game:
             },
             'player': {
                 'balance': self.player.balance,
-                'loan': self.player.loan,
+                'loan': self.player.loan.amount,
                 'salary_level': self.player.salary_level,
                 'cash_flow': self.player.get_cash_flow(),
                 'name': self.player.name,

@@ -1,26 +1,23 @@
 from item import *
 from player import Player
 from action import *
+from abc import ABC, abstractmethod
 
-class Card:
+class Card(ABC):
     def __init__(self, title, description):
         self.title = title
         self.description = description
         self.input_requires = False
 
+    @abstractmethod
     def get_available_action(self, player : Player) -> Action:
-        action = Action()
-        if False:
-            action.buy = 0
-        if False:
-            action.sell = 0
-        if False:
-            action.skip = 0
-        return action
-
+        pass
+    
+    @abstractmethod
     def get_card_info(self, player : Player):
-        return f"\ttitle : {self.title} \n\tdesc : {self.description}"
+        pass
 
+    @abstractmethod
     def execute(self, player : Player, action : Action):
         pass
 
@@ -33,7 +30,7 @@ class SalaryCard(Card):
     
     def get_card_info(self, player : Player):
         card_info = f"title : {self.title}\ndescription : {self.description}"
-        player_info = f'ваш баланс: {player.balance}'\
+        player_info = f'\nваш баланс: {player.balance}'\
                         f'\n+денежный поток: {player.get_cash_flow()}'\
                         f'\n\nновый баланс: {player.balance+player.get_cash_flow()}'
         return card_info + player_info

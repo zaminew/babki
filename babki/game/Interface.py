@@ -15,33 +15,35 @@ game = Game(game_settings, player_list)
 
 # TODO рефакторинг кода чтобы все общение было только через json/dict формат
 def do_action(button):
-    
     data = False, "data is None"
-    if button == "BUY":
-        data = game.play_step(Action(buy=buy_scale.get()))
-    elif button == "SELL":
-        data = game.play_step(Action(sell=sell_scale.get()))
-    elif button == "SKIP":
-        data = game.play_step(Action(skip=1))
-    elif button == "TAKE_LOAN":
-        data = game.player.take_loan(take_loan_scale.get())
-    elif button == "REPAY_LOAN":
-        data = game.player.repay_loan(repay_loan_scale.get())
-    else:
-        data = game.play_step(Action())
     
-    if data[0]:
-        label_info.config(text=data[1])
-        label_info.config(bg="#90ff90")
-        label_info.pack()
-    else:
-        label_info.config(text=data[1])
-        label_info.config(bg="#ff9090")
-        label_info.pack()
-    listbox.insert(tk.END, data[1])
-    listbox.see(tk.END)
+    amount = 0
+    if button == 'buy':
+        amount = buy_scale.get()
+    elif button == 'sell':
+        amount = sell_scale.get()
+    elif button == 'skip':
+        amount = 1
+    elif button == 'take_loan':
+        amount = take_loan_scale.get()
+    elif button == 'repay_loan':
+        amount = repay_loan_scale.get()
     
-    update_labels(game.get_data())
+    data = game.execute_player_action({'action' : button, 'amount' : amount})
+    
+    if data:
+        if data[0]:
+            label_info.config(text=data[1])
+            label_info.config(bg="#90ff90")
+            label_info.pack()
+        else:
+            label_info.config(text=data[1])
+            label_info.config(bg="#ff9090")
+            label_info.pack()
+        listbox.insert(tk.END, data[1])
+        listbox.see(tk.END)
+    
+        update_labels(game.get_data())
 
 
 def update_labels(data : Dict[str, int]):
@@ -137,25 +139,25 @@ skip_button_frame.pack(side="left", fill='both', expand=True, pady=50)
 
 take_loan_scale = tk.Scale(take_loan_button_frame, from_=1, to=10000, orient="horizontal", label="сумма кредита")
 take_loan_scale.pack(side='top', padx=5, pady=5, fill='x', expand=True)
-take_loan_button = tk.Button(take_loan_button_frame, text="take L", command=lambda: do_action("TAKE_LOAN"))
+take_loan_button = tk.Button(take_loan_button_frame, text="take L", command=lambda: do_action("take_loan"))
 take_loan_button.pack(side='bottom', padx=5, pady=5, fill='y', expand=True)
 
 repay_loan_scale = tk.Scale(repay_loan_button_frame, from_=1, to=10000, orient="horizontal", label="сумма погашения")
 repay_loan_scale.pack(side='top', padx=5, pady=5, fill='x', expand=True)
-repay_loan_button = tk.Button(repay_loan_button_frame, text="repay L", command=lambda: do_action("REPAY_LOAN"))
+repay_loan_button = tk.Button(repay_loan_button_frame, text="repay L", command=lambda: do_action("repay_loan"))
 repay_loan_button.pack(side='bottom', padx=5, pady=5, fill='y', expand=True)
 
 buy_scale = tk.Scale(buy_button_frame, from_=1, to=1, orient="horizontal", label="количество")
 buy_scale.pack(side='top', padx=5, pady=5, fill='x', expand=True)
-buy_button = tk.Button(buy_button_frame, text="BUY", command=lambda: do_action("BUY"))
+buy_button = tk.Button(buy_button_frame, text="BUY", command=lambda: do_action("buy"))
 buy_button.pack(side='bottom', padx=5, pady=5, fill='y', expand=True)
 
 sell_scale = tk.Scale(sell_button_frame, from_=1, to=1, orient="horizontal", label="количество")
 sell_scale.pack(side='top', padx=5, pady=5, fill='x', expand=True)
-sell_button = tk.Button(sell_button_frame, text="SELL", command=lambda: do_action("SELL"))
+sell_button = tk.Button(sell_button_frame, text="SELL", command=lambda: do_action("sell"))
 sell_button.pack(side='bottom', padx=5, pady=5, fill='y', expand=True)
 
-skip_button = tk.Button(skip_button_frame, text="SKIP", command=lambda: do_action("SKIP"))
+skip_button = tk.Button(skip_button_frame, text="SKIP", command=lambda: do_action("skip"))
 skip_button.pack(side='bottom', padx=5, pady=5, fill='y', expand=True)
 
 

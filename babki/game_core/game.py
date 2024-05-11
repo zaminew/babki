@@ -19,9 +19,9 @@ class Game:
     def __init__(self, settings: GameSetting, players : List[Player]):
         self.settings : GameSetting = settings
 
-        self.players : Dict[str, Player] = self.make_players(players)
+        self.players : Dict[str, Player] = {}# = self.make_players(players)
+        self.game_maker_id = ''
         # FIXME v временное поле
-        self.player : Player = players[0]
         self.events_data : List[Item] = []
         self.current_card : Card = None 
         self.current_step = 0
@@ -63,11 +63,10 @@ class Game:
 
         print('\033[35m' + f"создана новая игра с параметрами {self.settings.__str__()}" + '\033[0m')
 
-    def make_players(self, player_ids: List[str]) -> List[str]:
-        players = {}
-        for id in player_ids:
-            players[id] =  Player(id, 1000, 100)
-        return players
+    def add_player(self, uniq_id, name):
+        if self.game_maker_id == '':
+            self.game_maker_id = uniq_id
+        self.players[uniq_id] =  Player(uniq_id, name, 1000, 100)
 
     def start(self):
 

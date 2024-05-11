@@ -3,7 +3,8 @@ from item import *
 from loan import Loan
 
 class Player:
-    def __init__(self, name, balance, salary_level):
+    def __init__(self, uniq_id, name, balance, salary_level):
+        self.uniq_id = uniq_id
         self.name = name
         self.balance = balance
         self.salary_level = salary_level

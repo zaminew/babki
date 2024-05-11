@@ -36,6 +36,7 @@ pls = ['id1', 'id2']
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    uniq_id = db.Column(db.String(36), unique=True, nullable=False)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
@@ -52,7 +53,7 @@ class Post(db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return User.query.get(user_id)
 
 
 
@@ -62,6 +63,8 @@ def before_request():
         {'url': url_for('index'), 'name': 'Главная'},
         {'url': url_for('game_info'), 'name': 'Информация об игре'},
         {'url': url_for('create_game'), 'name': 'Создать игру'},
+        {'url': url_for('game_play'), 'name': 'Играть'},
+        {'url': url_for('get_dynamic_text'), 'name': 'get'},
         {'url': url_for('login'), 'name': 'Войти'},
         {'url': url_for('register'), 'name': 'Регистрация'},
         {'url': url_for('profile'), 'name': 'Профиль'},
@@ -76,12 +79,26 @@ def before_request():
 def index():
     return render_template('index.html', games = game_controller.get_games_info())
 
+
+@app.route('/game_play/')
+@app.route('/game_play/<name>')
+def game_play(name=None):
+    return render_template('game_play.html', name=name)
+
+@app.route('/get_dynamic_text', methods=['GET'])
+def get_dynamic_text():
+    dynamic_text = "Next card ЖДИТЕ"
+    return dynamic_text
+
+
 @app.route('/game_info', methods=['GET'])
 def game_info():
     game_id = request.args.get('game_id')
     game_data = game_controller.games.get(game_id)
+    
     if game_data:
-        return render_template('game_info.html', game_id=game_id, game_data=game_data.settings.to_json())
+        players = game_data.players
+        return render_template('game_info.html', game_id=game_id, game_settings=game_data.settings.to_json(), game_players=players, game_maker=game_data.game_maker_id)
     else:
         return "Game not found", 404
 
@@ -98,8 +115,8 @@ def create_game():
         
         game_id = game_controller.create_game(GameSetting(num_players=num_players, speed=speed,
                                                            difficulty=difficulty, game_type=game_type,
-                                                           game_mode=game_mode, hide_stats=hide_stats),
-                                              ['1', '2'])
+                                                           game_mode=game_mode, hide_stats=hide_stats))
+        game_controller.games[game_id].add_player(current_user.uniq_id, current_user.username)
         game_data = game_controller.games.get(game_id)
         if game_data:
             return redirect(url_for('game_info', game_id=game_id))
@@ -108,6 +125,19 @@ def create_game():
 
     return render_template('create_game.html', Speed=Speed, Difficulty=Difficulty, GameType=GameType, GameMode=GameMode)
 
+@app.route('/add_player_to_game/<game_id>, ', methods=['POST'])
+@login_required
+def add_player_to_game(game_id):
+    game_data = game_controller.games.get(game_id)
+    if not game_data:
+        return "Game not found", 404
+    
+    game_controller.games[game_id].add_player(current_user.uniq_id, current_user.username)
+    # Добавление объекта в игру, например:
+    # object_id = request.form['object_id']
+    # game_data.add_object(object_id)
+    
+    return redirect(url_for('game_info', game_id=game_id))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -129,11 +159,14 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User(username=username, password=password)
+        uniq_id = str(uuid.uuid4())
+        user = User(uniq_id=uniq_id, username=username, password=password)
         db.session.add(user)
         db.session.commit()
         login_user(user)
+        #session['uniq_id'] = uniq_id  # Сохраняем uniq_id в сессии
         return redirect(url_for('profile'))
+
     return render_template('register.html')
 
 @app.route('/profile')

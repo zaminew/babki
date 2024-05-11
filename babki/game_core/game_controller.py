@@ -8,7 +8,7 @@ class GameController:
     def __init__(self):
         self.games : Dict[str, Game] = {}
 
-    def create_game(self, settings: GameSetting, players: List[str]) -> str:
+    def create_game(self, settings: GameSetting, players: List[str] = List[str]) -> str:
         game_id = str(uuid.uuid4())
         self.games[game_id] = Game(settings, players)
         return game_id
@@ -26,8 +26,15 @@ class GameController:
     def get_all_games(self) -> Dict[str, Game]:
         return self.games
     
-    def get_games_info(self) -> List[str]:
-        
-        lines = [(key, f'p:{value.settings.num_players}, dif:{value.settings.difficulty}, ') for key, value in self.games.items()]
+    def get_games_info(self) -> List[tuple]:
+        lines = []
+        for key, value in self.games.items():
+            string = f'p:{value.settings.num_players}, dif:{value.settings.difficulty}, '\
+                        f' game maker: {value.players.get(value.game_maker_id).name}'
+            names = []
+            for player_key, player in value.players.items():
+                names.append(player.name)
+            
+            lines.append((key, string, names))
         return lines
         

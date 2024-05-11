@@ -3,5 +3,7 @@
 {% block content %}
     <h1>Профиль</h1>
     <p>Привет, {{ current_user.username }}!</p>
+    <p>ID: {{ current_user.id }}!</p>
+    <p>unique id: {{ current_user.uniq_id }}!</p>
     <a href="{{ url_for('logout') }}">Выйти</a>
 {% endblock %}

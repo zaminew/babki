@@ -11,9 +11,13 @@
         <p>Games</p>
         <div style="max-width: 800px; margin: 0 auto;">
             <ul style="list-style-type: none;">
-                {% for game_id, game_data in games %}
+                {% for game_id, game_data, players in games %}
                     <li class="demo">
                         <a href="{{ url_for('game_info', game_id=game_id) }}">{{ game_id }}</a>  {{ game_data }}
+                        {% for player in players %}
+                            {{ player }}
+                            </br>
+                        {% endfor %}
                     </li>
                 </br>
                 {% endfor %}

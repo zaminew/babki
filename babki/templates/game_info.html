@@ -9,17 +9,33 @@
         <a href="{{ url_for('register') }}">Регистрация</a> | <a href="{{ url_for('login') }}">Вход</a>
     {% endif %}
 
-    {% if game_data %}
+    {% if game_settings %}
         <p>Game ID: {{ game_id }}</p>
+        <a href="{{ url_for('game_play', game_id=game_id) }}"> Играть </a>
+</br>
+
         <p>Game Settings:</p>
-        <pre>
-            {% for key, value in game_data.items() %}
-                <span style="display: block;">{{ key }}: <strong>{{ value }}</strong></span>
-            {% endfor %}
-        </pre>
+        {% for key, value in game_settings.items() %}
+            <span style="display: block;">{{ key }}: <strong>{{ value }}</strong></span>
+        {% endfor %}
+</br>
+        <p>Players:</p>
+        {% for key, value in game_players.items() %}
+            {% if key == game_maker %}
+                <span style="display: block;">{{ key }}: <strong>--- {{ value.name }} ---</strong></span>
+            {% else %}
+                <span style="display: block;">{{ key }}: <strong>{{ value.name }}</strong></span>
+            {% endif %}
+            
+        {% endfor %}
+        
+        <form action="{{ url_for('add_player_to_game', game_id=game_id) }}" method="post">
+            <button type="submit">Добавить игрока в игру</button>
+        </form>
+
 
     {% else %}
-        <p>Game not found</p>
+        <p>Данные об игре не получены</p>
     {% endif %}
 
 {% endblock %}

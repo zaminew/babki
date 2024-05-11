@@ -23,8 +23,10 @@ class GameMode(EnumStr):
     STABLE_EVENTS = 'stable_events'
     RANDOM_EVENTS = 'random_events'
 
-class GameSettings:
-    def __init__(self, num_players, speed : Speed, difficulty : Difficulty, game_type : GameType, game_mode : GameMode, hide_stats : bool):
+class GameSetting:
+    def __init__(self, num_players = 1, speed : Speed = Speed.NORMAL, difficulty : Difficulty = Difficulty.MEDIUM, 
+                 game_type : GameType = GameType.ONE_FOR_ALL, game_mode : GameMode = GameMode.RANDOM_EVENTS, 
+                 hide_stats : bool = True):
         self.num_players = num_players
         self.speed : Speed = speed
         self.difficulty : Difficulty = difficulty

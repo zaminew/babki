@@ -1,6 +1,6 @@
 from player import Player
 from game import Game
-from game_setting import GameSettings, Speed, Difficulty, GameType, GameMode
+from game_setting import GameSetting, Speed, Difficulty, GameType, GameMode
 
 # TODO при запуске скрипта в него передаются параметры игры например 
     # режим игры колличество игроков, ограничение времени на ход, возможность видеть отчеты других, валюта, сумма или поток для победы и так далее 
@@ -30,7 +30,7 @@ from game_setting import GameSettings, Speed, Difficulty, GameType, GameMode
 
 player_list = [Player("Eugene", 10000, 1000), Player("Eugene", 10000, 1000)]
 
-game_settings = GameSettings(6, Speed.NORMAL, Difficulty.MEDIUM, GameType.ONE_FOR_ALL, GameMode.STABLE_EVENTS, True)
+game_settings = GameSetting(6, Speed.NORMAL, Difficulty.MEDIUM, GameType.ONE_FOR_ALL, GameMode.STABLE_EVENTS, True)
 
 game = Game(game_settings, player_list)
 

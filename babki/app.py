@@ -1,4 +1,5 @@
-
+import sys
+sys.path.append('/root/myDocker/babki/game_core')
 import uuid
 from markupsafe import escape
 from flask import Flask, render_template, request, redirect, url_for, session, g
@@ -6,6 +7,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from flask_login import current_user, login_required
 import os
+
+from game_core.game_controller import GameController
+from game_core.game_setting import *
+
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -24,6 +29,11 @@ login_manager.login_view = 'login'
 # test
 stubUserRating=777
 
+game_controller = GameController()
+
+pls = ['id1', 'id2']
+
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -40,9 +50,6 @@ class Post(db.Model):
 
 
 
-    
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -53,6 +60,8 @@ def load_user(user_id):
 def before_request():
     pages = [
         {'url': url_for('index'), 'name': 'Главная'},
+        {'url': url_for('game_info'), 'name': 'Информация об игре'},
+        {'url': url_for('create_game'), 'name': 'Создать игру'},
         {'url': url_for('login'), 'name': 'Войти'},
         {'url': url_for('register'), 'name': 'Регистрация'},
         {'url': url_for('profile'), 'name': 'Профиль'},
@@ -62,12 +71,42 @@ def before_request():
     ]
     g.pages = pages
     g.stubUserRating = stubUserRating
-
-
-
+    
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', games = game_controller.get_games_info())
+
+@app.route('/game_info', methods=['GET'])
+def game_info():
+    game_id = request.args.get('game_id')
+    game_data = game_controller.games.get(game_id)
+    if game_data:
+        return render_template('game_info.html', game_id=game_id, game_data=game_data.settings.to_json())
+    else:
+        return "Game not found", 404
+
+@app.route('/create_game', methods=['GET', 'POST'])
+@login_required
+def create_game():
+    if request.method == 'POST':
+        num_players = int(request.form['num_players'])
+        speed = Speed(request.form['speed'])
+        difficulty = Difficulty(request.form['difficulty'])
+        game_type = GameType(request.form['game_type'])
+        game_mode = GameMode(request.form['game_mode'])
+        hide_stats = True if 'hide_stats' in request.form else False
+        
+        game_id = game_controller.create_game(GameSetting(num_players=num_players, speed=speed,
+                                                           difficulty=difficulty, game_type=game_type,
+                                                           game_mode=game_mode, hide_stats=hide_stats),
+                                              ['1', '2'])
+        game_data = game_controller.games.get(game_id)
+        if game_data:
+            return redirect(url_for('game_info', game_id=game_id))
+        else:
+            return "Game not found", 404
+
+    return render_template('create_game.html', Speed=Speed, Difficulty=Difficulty, GameType=GameType, GameMode=GameMode)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -84,7 +123,6 @@ def login():
             # Обработка неверного логина или пароля
             return render_template('login.html', error='Неверный логин или пароль')
     return render_template('login.html')
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -110,13 +148,6 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-
-
-
-
-
-
-
 @app.route('/posts', methods=['GET', 'POST'])
 def posts():
     if request.method == 'POST':
@@ -128,7 +159,6 @@ def posts():
 
     posts = Post.query.all()
     return render_template('posts.html', posts=posts)
-
 
 @app.route('/add_post', methods=['GET', 'POST'])
 @login_required

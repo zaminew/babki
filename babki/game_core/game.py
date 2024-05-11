@@ -6,20 +6,20 @@ from typing import List
 from player import Player
 from item import *
 from card import *
-from game_setting import GameSettings
+from game_setting import GameSetting
 from json_loader import JsonLoader
 from action import Action
 from typing import Dict
+import uuid
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 cards_file_Path = os.path.join(current_dir, 'data/cards.json')
 
 class Game:
-    def __init__(self, settings: GameSettings, players : List[Player]):
-       
-        self.settings : GameSettings = settings
+    def __init__(self, settings: GameSetting, players : List[Player]):
+        self.settings : GameSetting = settings
 
-        self.players : List[Player] = players
+        self.players : Dict[str, Player] = self.make_players(players)
         # FIXME v временное поле
         self.player : Player = players[0]
         self.events_data : List[Item] = []
@@ -63,6 +63,11 @@ class Game:
 
         print('\033[35m' + f"создана новая игра с параметрами {self.settings.__str__()}" + '\033[0m')
 
+    def make_players(self, player_ids: List[str]) -> List[str]:
+        players = {}
+        for id in player_ids:
+            players[id] =  Player(id, 1000, 100)
+        return players
 
     def start(self):
 
@@ -131,7 +136,7 @@ class Game:
             elif user_action_data['action'] == 'repay_loan':
                 result = self.player.loan.repay(amount)  
             else:
-                result = False, 'неизвестная команда для исполнения'
+                result = False, f'неизвестная команда для исполнения -> {user_action_data["action"]}'
         
         if result:
             print(f'------> {result}')
@@ -147,13 +152,15 @@ class Game:
     
     def get_data(self) -> Dict[str, int]:
         available_action = self.current_card.get_available_action(self.player)
+        available_action_loan = self.player.loan.get_available_action()
         #print(available_action)
-        
-        return {
+        data = {
             'actions': {
                 'buy': available_action.buy,
                 'sell': available_action.sell,
                 'skip': available_action.skip,
+                'take_loan': available_action_loan.buy,
+                'repay_loan': available_action_loan.sell,
             },
             'player': {
                 'balance': self.player.balance,
@@ -165,6 +172,8 @@ class Game:
             },
             'card': self.current_card.get_card_info(self.player)
         }
+        print('-> ' + str(data))
+        return data
 
 #NOTE в самом событии будет указано что можно делать с этим событием и какие кнопки будут доступны а так же доступное колличество
 

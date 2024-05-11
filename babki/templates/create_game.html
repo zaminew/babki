@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>Настройки новой игры</h1>
+    <form method="post">
+        <label for="num_players">Количество игроков:</label><br>
+        <input type="number" id="num_players" name="num_players" value="1" min="1" required><br><br>
+        
+        <label for="speed">Скорость игры:</label><br>
+        <select id="speed" name="speed" required>
+            {% for speed in Speed %}
+                <option value="{{ speed }}">{{ speed }}</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <label for="difficulty">Сложность игры:</label><br>
+        <select id="difficulty" name="difficulty" required>
+            {% for difficulty in Difficulty %}
+                <option value="{{ difficulty }}">{{ difficulty }}</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <label for="game_type">Тип игры:</label><br>
+        <select id="game_type" name="game_type" required>
+            {% for game_type in GameType %}
+                <option value="{{ game_type }}">{{ game_type }}</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <label for="game_mode">Режим игры:</label><br>
+        <select id="game_mode" name="game_mode" required>
+            {% for game_mode in GameMode %}
+                <option value="{{ game_mode }}">{{ game_mode }}</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <label for="hide_stats">Скрыть статистику:</label><br>
+        <input type="checkbox" id="hide_stats" name="hide_stats" value="True"><br><br>
+        
+        <button type="submit">Создать игру</button>
+    </form>
+{% endblock %}

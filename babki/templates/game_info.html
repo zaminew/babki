@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2>GAME INFO!</h2>
+
+    {% if current_user.is_authenticated %}
+        <p>GAME INFO</p>
+    {% else %}
+        <a href="{{ url_for('register') }}">Регистрация</a> | <a href="{{ url_for('login') }}">Вход</a>
+    {% endif %}
+
+    {% if game_data %}
+        <p>Game ID: {{ game_id }}</p>
+        <p>Game Settings:</p>
+        <pre>
+            {% for key, value in game_data.items() %}
+                <span style="display: block;">{{ key }}: <strong>{{ value }}</strong></span>
+            {% endfor %}
+        </pre>
+
+    {% else %}
+        <p>Game not found</p>
+    {% endif %}
+
+{% endblock %}

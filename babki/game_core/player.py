@@ -52,3 +52,4 @@ class Player:
                 } for business in self.businesses
             ]
         }
+

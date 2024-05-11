@@ -11,6 +11,19 @@
         background-size: cover; /* чтобы изображение занимало всю доступную область */
         background-repeat: no-repeat; /* чтобы изображение не повторялось */
         background-attachment: fixed; /* чтобы изображение оставалось на месте при прокрутке страницы */
+
+
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        font-size: 16px;
+        letter-spacing: 2px;
+        word-spacing: 2px;
+        color: #8efac6;
+        font-weight: normal;
+        text-decoration: none;
+        font-style: normal;
+        font-variant: normal;
+        text-transform: none;
+
     }
 
     header {
@@ -33,6 +46,20 @@
         margin-right: 20px;
     }
 
+    .game-item {
+        border: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .demo {
+        -webkit-box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 0px 0px 31px 10px rgba(55,255,20,0.21); 
+        box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 0px 0px 31px 10px rgba(55,255,20,0.21);
+        border: 3px solid rgba(55,255,20,0.21);
+        border-radius: 11px;
+        padding: 5px;
+        margin: 5px;
+        }
 
     nav ul {
         list-style-type: none;

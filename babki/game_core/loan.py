@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar
 import math
+from action import Action
 
 class Loan:
     def __init__(self, player):
@@ -35,3 +36,13 @@ class Loan:
     
     def get_payment(self):
         return math.ceil(self.amount * self.rate / 100)
+    
+    def get_available_action(self) -> Action:
+        action = Action()        
+        action.buy = math.ceil(self.player.get_cash_flow() * 100 / self.rate)
+        if self.player.balance >= self.amount:
+            action.sell = self.amount
+        else:
+            action.sell = self.player.balance
+        action.skip = 0
+        return action

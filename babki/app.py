@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from flask_login import current_user, login_required
 import os
+import json
 
 from game_core.game_controller import GameController
 from game_core.game_setting import *
@@ -63,8 +64,6 @@ def before_request():
         {'url': url_for('index'), 'name': 'Главная'},
         {'url': url_for('game_info'), 'name': 'Информация об игре'},
         {'url': url_for('create_game'), 'name': 'Создать игру'},
-        {'url': url_for('game_play'), 'name': 'Играть'},
-        {'url': url_for('get_dynamic_text'), 'name': 'get'},
         {'url': url_for('login'), 'name': 'Войти'},
         {'url': url_for('register'), 'name': 'Регистрация'},
         {'url': url_for('profile'), 'name': 'Профиль'},
@@ -80,17 +79,45 @@ def index():
     return render_template('index.html', games = game_controller.get_games_info())
 
 
-@app.route('/game_play/')
-@app.route('/game_play/<name>')
-def game_play(name=None):
-    return render_template('game_play.html', name=name)
+@app.route('/game_play/<game_id>')
+def game_play(game_id=None):
+    game_data = game_controller.games.get(game_id)
+    
+    if game_data:
+        return render_template('game_play.html', name=game_id)    
+    else:
+        return "Game not found", 404
 
-@app.route('/get_dynamic_text', methods=['GET'])
-def get_dynamic_text():
-    dynamic_text = "Next card ЖДИТЕ"
-    return dynamic_text
 
+@app.route('/get_game_data/<game_id>', methods=['GET'])
+def get_game_data(game_id):
+    game = game_controller.games.get(game_id)
+    if game:
+        data = game.get_data(current_user.uniq_id)
+        return json.dumps(data, ensure_ascii=False).encode('utf8')
+    else:
+        return "Game not found", 404
+    
+    
+@app.route('/do_action/<game_id>', methods=['GET'])
+def do_action(game_id):
+    action = request.args.get('action')
+    amount_str = request.args.get('amount')
+    amount = 0
+    if amount_str.isdigit():
+        amount = int(amount_str)
+    else:
+        return "Amount should be a valid integer", 400
+    game = game_controller.games.get(game_id)
+    if game:
+        data = {'action':action, 'amount':amount}
+        print(data)
+        resp = game.execute_player_action(current_user.uniq_id, data)
+        return json.dumps(resp, ensure_ascii=False).encode('utf8')
+    else:
+        return "Game not found", 404
 
+    
 @app.route('/game_info', methods=['GET'])
 def game_info():
     game_id = request.args.get('game_id')
@@ -133,9 +160,6 @@ def add_player_to_game(game_id):
         return "Game not found", 404
     
     game_controller.games[game_id].add_player(current_user.uniq_id, current_user.username)
-    # Добавление объекта в игру, например:
-    # object_id = request.form['object_id']
-    # game_data.add_object(object_id)
     
     return redirect(url_for('game_info', game_id=game_id))
 
@@ -149,6 +173,8 @@ def login():
             login_user(user)
             next_page = request.args.get('next')
             return redirect(next_page or url_for('index'))
+        # FIXME при переходе со странцы с пост запросом без авторизации метод потом переводит на туже страницу без параметров из-за этого возникает ошибка 
+        # необходимо запретить некстпейдж с определнных страниц
         else:
             # Обработка неверного логина или пароля
             return render_template('login.html', error='Неверный логин или пароль')

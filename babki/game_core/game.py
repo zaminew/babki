@@ -21,7 +21,7 @@ class Game:
 
         self.players : Dict[str, Player] = {}# = self.make_players(players)
         self.game_maker_id = ''
-        # FIXME v временное поле
+        
         self.events_data : List[Item] = []
         self.current_card : Card = None 
         self.current_step = 0
@@ -115,7 +115,10 @@ class Game:
                 print('\033[31m' + f"нет доступных действий : \033[0m")
             '''
 
-    def execute_player_action(self, user_action_data : Dict[str, int]):
+    def execute_player_action(self, player_id, user_action_data : Dict[str, int]):
+        player : Player = self.players.get(player_id)
+        if player is None:
+            return False, 'You do not have access to this game'
         print(f'---> {user_action_data}')
         action = Action()
         amount = user_action_data.get('amount', 0)
@@ -123,17 +126,17 @@ class Game:
         if 'action' in user_action_data:
             if user_action_data['action'] == 'buy':
                 action.buy = amount
-                result = self.current_card.execute(self.player, action)
+                result = self.current_card.execute(player, action)
             elif user_action_data['action'] == 'sell':
                 action.sell = amount
-                result = self.current_card.execute(self.player, action)
+                result = self.current_card.execute(player, action)
             elif user_action_data['action'] == 'skip':
                 action.skip = 1
-                result = self.current_card.execute(self.player, action)
+                result = self.current_card.execute(player, action)
             elif user_action_data['action'] == 'take_loan':
-                result = self.player.loan.take(amount)
+                result = player.loan.take(amount)
             elif user_action_data['action'] == 'repay_loan':
-                result = self.player.loan.repay(amount)  
+                result = player.loan.repay(amount)  
             else:
                 result = False, f'неизвестная команда для исполнения -> {user_action_data["action"]}'
         
@@ -141,7 +144,8 @@ class Game:
             print(f'------> {result}')
             if result[0]:
                 if action.is_active():
-                    self.print_card_in_console(self.set_new_card())
+                    self.set_new_card()
+                    #self.print_card_in_console(self.set_new_card())
                 return True, str(result[1])
             else:
                 return False, result[1]
@@ -149,9 +153,12 @@ class Game:
             print(f'------x result не определен')
         
     
-    def get_data(self) -> Dict[str, int]:
-        available_action = self.current_card.get_available_action(self.player)
-        available_action_loan = self.player.loan.get_available_action()
+    def get_data(self, player_id) -> Dict[str, int]:
+        player : Player = self.players.get(player_id)
+        if player is None:
+            return False, 'You do not have access to this game'
+        available_action = self.current_card.get_available_action(player)
+        available_action_loan = player.loan.get_available_action()
         #print(available_action)
         data = {
             'actions': {
@@ -162,14 +169,14 @@ class Game:
                 'repay_loan': available_action_loan.sell,
             },
             'player': {
-                'balance': self.player.balance,
-                'loan': self.player.loan.amount,
-                'salary_level': self.player.salary_level,
-                'cash_flow': self.player.get_cash_flow(),
-                'name': self.player.name,
-                'ownership': self.player.get_assets_info()
+                'balance': player.balance,
+                'loan': player.loan.amount,
+                'salary_level': player.salary_level,
+                'cash_flow': player.get_cash_flow(),
+                'name': player.name,
+                'ownership': player.get_assets_info()
             },
-            'card': self.current_card.get_card_info(self.player)
+            'card': self.current_card.get_card_info(player)
         }
         print('-> ' + str(data))
         return data

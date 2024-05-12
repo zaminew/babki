@@ -1,27 +1,91 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <title>Hello from Flask</title>
+    <title>GAME</title>
     {% if name %}
-      <h1>Hello {{ name }}!</h1>
+      <h1>GAME ID {{ name }}!</h1>
     {% else %}
-      <h1>Hello, World!</h1>
+      <h1>HAVE NOT ID</h1>
     {% endif %}
 
-    <h1>Login</h1>
-    <button id="changeTextButton">Change Text</button>
-    <p id="dynamicText">Initial Text</p>
+    <h1>GAME</h1>
+    <p id="action_complete">ACTION</p>
+    <button id="update_button">Update</button>
+    <p id="dynamicText">data area</p>
+
+    <h1>Scale Example</h1>
+    <input type="range" min="100" max="1000" step="100" value="500" id="scaleRange">
+    <p>Current Scale: $<span id="currentScale">500</span></p>
+    <script>
+        $(document).ready(function() {
+            $("#scaleRange").on("input", function() {
+                var scaleValue = $(this).val();
+                $("#currentScale").text(scaleValue);
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function() {
-            $("#changeTextButton").click(function() {
+
+            function updateData() {
+                $("#update_button").click();
+            }
+            setInterval(updateData, 5000);
+
+
+
+            $("#update_button").click(function() {
+                var pathArray = window.location.pathname.split('/');
+                var gameId = pathArray[pathArray.length - 1];
+    
                 $.ajax({
-                    url: "/get_dynamic_text",
+                    url: "/get_game_data/" + gameId,
                     type: "GET",
+                    
                     success: function(data) {
+                        console.log("Data received from server:", data);
+    
                         $("#dynamicText").text(data);
+    
+                        var gameData = JSON.parse(data);
+
+                        $("#dynamicText").html("<h2>Player: " + gameData.player.name + "</h2>");
+                        $("#dynamicText").append("<p>Balance: " + gameData.player.balance + "</p>");
+                        $("#dynamicText").append("<p>Card: " + gameData.card + "</p>");
+                        // TODO добавить зоны слева для информации об активах, справа о действиях, по центру интерфейс
+                        // TODO добавить кнопкам выбор количества
+                        // Создаем кнопки для каждого действия
+                        $.each(gameData.actions, function(action, value) {
+                            var button = $("<button>").text(action).click(function() {
+                                $.ajax({
+                                    url: "/do_action/" + gameId,
+                                    type: "GET",
+                                    data: {
+                                        action: action,
+                                        amount: 100
+                                    },
+                                    success: function(response) {
+                                        console.log("Action executed:", response);
+                                        $("#action_complete").text(response);
+                                        $("#update_button").click()
+                                    },
+                                    error: function() {
+                                        alert("Error occurred while executing action.");
+                                        $("#action_complete").text('ERROR');
+                                    }
+                                });
+                            });
+
+                            if (value === 0) {
+                                button.prop('disabled', true);
+                            }
+                            $("#dynamicText").append(button);
+                        });
+    
+
                     },
                     error: function() {
                         alert("Error occurred while fetching data. ОШТИБКА ПРИ ВЫПОЛНЕНИИ ЗАПРОСА");
@@ -30,4 +94,5 @@
             });
         });
     </script>
+    
 {% endblock %}

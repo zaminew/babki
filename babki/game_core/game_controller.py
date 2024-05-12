@@ -11,6 +11,8 @@ class GameController:
     def create_game(self, settings: GameSetting, players: List[str] = List[str]) -> str:
         game_id = str(uuid.uuid4())
         self.games[game_id] = Game(settings, players)
+        # TODO temp
+        self.games[game_id].set_new_card()
         return game_id
 
     def get_game(self, game_id: str) -> Game:

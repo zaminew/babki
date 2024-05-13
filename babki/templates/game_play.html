@@ -1,41 +1,191 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babki</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+   
+        .grid-container {
+            display: flex;
+            height: 100vh;
+            background-color: #f0f0f0;
+            flex-direction: row;
+            align-items: stretch;
+        }
+    
+        .grid-item {
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 5px;
+            text-align: center;
+            flex-basis: 33.33%;
+            margin: 10px;
+        }
+    
+        .grid-item.left {
+            min-width: 300px;
+            margin: 10 auto;
+            padding: 5px;
+        }
+        .grid-item.center {
+            max-width: 450px;
+            min-width: 450px;
+            padding: 5px;
+            flex-grow: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+        .grid-item.right {
+            min-width: 300px;
+            margin: 10 auto;
+            padding: 5px;
+        }
+    
+        @media screen and (max-width: 767px) {
+            .grid-container {
+                flex-direction: column; 
+            }
+            .grid-item.left {
+                max-width: none;
+                margin: 0;
+                padding: 5px;
+            }
+            .grid-item.center {
+                max-width: none;
+                margin: 10px 0;
+                padding: 5px;
+            }
+            .grid-item.right {
+                max-width: none;
+                margin: 0; 
+                padding: 5px;
+            }
+        }
 
-{% block content %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        .inner-block {
+            background-color: #AAAAdb;
+            color: #ffffff;
+            padding: 5px;
+            margin: 0;
+            display: flex;
+            flex-direction: column; 
+            justify-content: center;
+            flex-grow: 1;
+        }
 
-    <title>GAME</title>
-    {% if name %}
-      <h1>GAME ID {{ name }}!</h1>
-    {% else %}
-      <h1>HAVE NOT ID</h1>
-    {% endif %}
+        .top-block, .bottom-block {
+            background-color: #AA98db;
+            color: #ffffff;
+            padding: 5px;
+            margin: 0;
+            display: flex;
+            flex-direction: row; 
+            justify-content: center;
+        }
 
-    <h1>GAME</h1>
-    <p id="action_complete">ACTION</p>
-    <button id="update_button">Update</button>
-    <p id="dynamicText">data area</p>
+        .indicator {
+            background-color: #99AAdb;
+            color: #ffffff;
+            padding: 5px;
+            margin: 5px;
+            width: 33.33%;
+            height: 100%;
+            border-right: 1px solid #ebebeb;
+            border-left: 1px solid white;
+            border-bottom: 1px solid #ebebeb;
+        }
 
-    <h1>Scale Example</h1>
-    <input type="range" min="100" max="1000" step="100" value="500" id="scaleRange">
-    <p>Current Scale: $<span id="currentScale">500</span></p>
+    </style>
+</head>
+
+
+<body><!--
+    <header>
+        
+        <div class="player-info">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('profile') }}">{{ current_user.username }}, ({{ g.stubUserRating }})</a>
+            {% else %}
+                <a href="{{ url_for('register') }}">Регистрация</a> | <a href="{{ url_for('login') }}">Вход</a>
+            {% endif %}
+        </div>
+        <nav>
+            <ul class="horizontal-menu">
+                <li><a href="{{ url_for('index') }}">Лобби</a></li>
+                <li><a href="{{ url_for('create_game') }}">Создать игру</a></li>
+                <li><a href="{{ url_for('profile') }}">Профиль</a></li>
+                <li><a href="{{ url_for('posts') }}">Посты</a></li>
+                <li><a href="{{ url_for('add_post') }}">Добавить пост</a></li>
+            </ul>
+        </nav>
+        
+    </header>
+    -->
+    <div class="grid-container">
+        <div class="grid-item left">
+            <p id="ownership">ownership area</p>
+        </div>
+
+        <div class="grid-item center">
+            <div class="top-block">
+                <div class="indicator">
+                    <div class="i-title">Денежный поток</div>
+					<div class="i-value">
+                        <span id="cash-flow">0</span>
+                        <span class="rub">руб</span>
+                    </div>
+                </div>
+                <div class="indicator">
+                    <div class="i-title">Наличные</div>
+					<div class="i-value">
+                        <span id="cash">0</span>
+                        <span class="rub">руб</span>
+                    </div>
+                </div>
+                <div class="indicator">
+                    <div class="i-title">Кредит</div>
+					<div class="i-value">
+                        <span id="loan">0</span>
+                        <span class="rub">руб</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="inner-block">
+                <p id="action_complete">ACTION</p>
+                <button id="update_button">Update</button>
+                <p id="card">card area</p>
+    
+                <input type="range" min="100" max="1000" step="100" value="500" id="scaleRange">
+                <p>Current Scale: $<span id="currentScale">500</span></p>
+            </div>
+
+            <div class="bottom-block">
+                <p id="action">action area</p>
+            </div>
+        </div>
+
+
+        <div class="grid-item right">Справа</div>
+    </div>
+
+
     <script>
         $(document).ready(function() {
+
             $("#scaleRange").on("input", function() {
                 var scaleValue = $(this).val();
                 $("#currentScale").text(scaleValue);
             });
-        });
-    </script>
-
-    <script>
-        $(document).ready(function() {
 
             function updateData() {
                 $("#update_button").click();
             }
             setInterval(updateData, 5000);
-
-
 
             $("#update_button").click(function() {
                 var pathArray = window.location.pathname.split('/');
@@ -47,17 +197,20 @@
                     
                     success: function(data) {
                         console.log("Data received from server:", data);
-    
-                        $("#dynamicText").text(data);
-    
                         var gameData = JSON.parse(data);
+                        //$("#dynamicText").text(data);
+                        
+                        $("#cash-flow").text(gameData.player.cash_flow);
+                        $("#cash").text(gameData.player.balance);
+                        $("#loan").text(gameData.player.loan);
+                        $("#card").text("<p>Card: " + gameData.card + "</p>");
 
-                        $("#dynamicText").html("<h2>Player: " + gameData.player.name + "</h2>");
-                        $("#dynamicText").append("<p>Balance: " + gameData.player.balance + "</p>");
-                        $("#dynamicText").append("<p>Card: " + gameData.card + "</p>");
+                        $("#ownership").html(" " + gameData.player.ownership + " ");
+
                         // TODO добавить зоны слева для информации об активах, справа о действиях, по центру интерфейс
                         // TODO добавить кнопкам выбор количества
                         // Создаем кнопки для каждого действия
+                        $("#action").empty();
                         $.each(gameData.actions, function(action, value) {
                             var button = $("<button>").text(action).click(function() {
                                 $.ajax({
@@ -82,7 +235,7 @@
                             if (value === 0) {
                                 button.prop('disabled', true);
                             }
-                            $("#dynamicText").append(button);
+                            $("#action").append(button);
                         });
     
 
@@ -95,4 +248,6 @@
         });
     </script>
     
-{% endblock %}
+
+</body>
+</html>

@@ -174,7 +174,7 @@ class Game:
                 'salary_level': player.salary_level,
                 'cash_flow': player.get_cash_flow(),
                 'name': player.name,
-                'ownership': player.get_assets_info()
+                'ownership': str(player.get_assets_info())
             },
             'card': self.current_card.get_card_info(player)
         }

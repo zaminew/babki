@@ -12,11 +12,7 @@
         background-repeat: no-repeat; /* чтобы изображение не повторялось */
         background-attachment: fixed; /* чтобы изображение оставалось на месте при прокрутке страницы */
 
-
-        font-family: "Comic Sans MS", cursive, sans-serif;
         font-size: 16px;
-        letter-spacing: 2px;
-        word-spacing: 2px;
         color: #8efac6;
         font-weight: normal;
         text-decoration: none;

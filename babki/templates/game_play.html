@@ -10,26 +10,28 @@
     <style>
    
         .grid-container {
-            display: flex;
             height: 100vh;
             background-color: #f0f0f0;
+            display: flex;
             flex-direction: row;
             align-items: stretch;
         }
     
         .grid-item {
-            background-color: #3498db;
+            background-color: #5555AA;
             color: #ffffff;
-            padding: 5px;
             text-align: center;
             flex-basis: 33.33%;
-            margin: 10px;
+            margin: 2px;
         }
     
         .grid-item.left {
             min-width: 300px;
-            margin: 10 auto;
-            padding: 5px;
+            padding: 1px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: stretch;
         }
         .grid-item.center {
             max-width: 450px;
@@ -44,7 +46,6 @@
             margin: 10 auto;
             padding: 5px;
         }
-    
         @media screen and (max-width: 767px) {
             .grid-container {
                 flex-direction: column; 
@@ -67,23 +68,33 @@
         }
 
         .inner-block {
-            background-color: #AAAAdb;
+            background-color: #FF0000;
             color: #ffffff;
             padding: 5px;
-            margin: 0;
+            margin: 10px;
             display: flex;
-            flex-direction: column; 
+            flex-direction: column;
             justify-content: center;
             flex-grow: 1;
         }
 
         .top-block, .bottom-block {
-            background-color: #AA98db;
+            background-color: #00FF00;
             color: #ffffff;
             padding: 5px;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .indicator-container {
+            background-color: #00FF00;
+            color: #ffffff;
+            padding: 0;
             margin: 0;
             display: flex;
-            flex-direction: row; 
+            flex-direction: row;
             justify-content: center;
         }
 
@@ -93,15 +104,32 @@
             padding: 5px;
             margin: 5px;
             width: 33.33%;
-            height: 100%;
-            border-right: 1px solid #ebebeb;
-            border-left: 1px solid white;
-            border-bottom: 1px solid #ebebeb;
+            border: 2px solid #ebebeb;
+            overflow: hidden;
         }
 
     </style>
 </head>
 
+<style>
+    .scrollable-list {
+        flex: 1;
+        overflow-y: scroll; 
+        margin: 2px;
+        max-height: calc(25% - 8px); 
+    }
+    .zebra {
+        list-style: none;
+        padding: 0;
+        position: relative; /* добавлено */
+    }
+    .zebra li {
+        padding: 4px;
+        text-align: left; /* Выравнивание текста слева */
+    }
+    .zebra li:nth-child(odd) {background: #277;}
+    .zebra li:nth-child(even) {background: #244;}
+</style>
 
 <body><!--
     <header>
@@ -127,36 +155,68 @@
     -->
     <div class="grid-container">
         <div class="grid-item left">
-            <p id="ownership">ownership area</p>
+            <ul class="zebra scrollable-list">
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+            </ul>
+            
+            <p>АКЦИИ</p>
+            <ul class="zebra scrollable-list" id="stock-list">
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+            </ul>
+
+            <p>НЕДВИЖИМОСТЬ</p>
+            <ul class="zebra scrollable-list" id="property-list">
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+            </ul>
+
+            <p>БИЗНЕС</p>
+            <ul class="zebra scrollable-list" id="businesses-list">
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+                <li>Элемент списка</li>
+            </ul>
+
         </div>
 
         <div class="grid-item center">
             <div class="top-block">
-                <div class="indicator">
-                    <div class="i-title">Денежный поток</div>
-					<div class="i-value">
-                        <span id="cash-flow">0</span>
-                        <span class="rub">руб</span>
+                <div class="indicator-container">
+                    <div class="indicator">
+                        <div class="i-title">Денежный поток</div>
+                        <div class="i-value">
+                            <span id="cash-flow">0</span>
+                            <span class="rub">руб</span>
+                        </div>
                     </div>
-                </div>
-                <div class="indicator">
-                    <div class="i-title">Наличные</div>
-					<div class="i-value">
-                        <span id="cash">0</span>
-                        <span class="rub">руб</span>
+                    <div class="indicator">
+                        <div class="i-title">Наличные</div>
+                        <div class="i-value">
+                            <span id="cash">0</span>
+                            <span class="rub">руб</span>
+                        </div>
                     </div>
-                </div>
-                <div class="indicator">
-                    <div class="i-title">Кредит</div>
-					<div class="i-value">
-                        <span id="loan">0</span>
-                        <span class="rub">руб</span>
+                    <div class="indicator">
+                        <div class="i-title">Кредит</div>
+                        <div class="i-value">
+                            <span id="loan">0</span>
+                            <span class="rub">руб</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="inner-block">
-                <p id="action_complete">ACTION</p>
+            <div class="inner-block">                
                 <button id="update_button">Update</button>
                 <p id="card">card area</p>
     
@@ -166,6 +226,7 @@
 
             <div class="bottom-block">
                 <p id="action">action area</p>
+                <p id="action_complete">ACTION</p>
             </div>
         </div>
 
@@ -205,7 +266,23 @@
                         $("#loan").text(gameData.player.loan);
                         $("#card").text("<p>Card: " + gameData.card + "</p>");
 
-                        $("#ownership").html(" " + gameData.player.ownership + " ");
+                        // Добавление элементов из массива property
+                        $("#property-list").empty();
+                        $.each(gameData.player.ownership.property, function(index, property) {
+                            $("#property-list").append("<li>" + property.name + ": Цена - " + property.price + ", Ипотека - " + property.mortgage + ", Первоначальный взнос - " + property.down_payment + ", Поток наличности - " + property.cash_flow + ", Кол-во спален - " + property.bed + ", Кол-во ванных - " + property.bath + "</li>");
+                        });
+
+                        // Добавление элементов из массива businesses
+                        $("#businesses-list").empty();
+                        $.each(gameData.player.ownership.businesses, function(index, business) {
+                            $("#businesses-list").append("<li>" + business.name + ": Цена - " + business.price + ", Ипотека - " + business.mortgage + ", Первоначальный взнос - " + business.down_payment + ", Поток наличности - " + business.cash_flow + "</li>");
+                        });
+
+                        // Добавление элементов из массива stocks
+                        $("#stock-list").empty();
+                        $.each(gameData.player.ownership.stocks, function(index, stock) {
+                            $("#stock-list").append("<li>" + stock.name + ": Кол-во - " + stock.quantity + ", Цена - " + stock.price + "</li>");
+                        });
 
                         // TODO добавить зоны слева для информации об активах, справа о действиях, по центру интерфейс
                         // TODO добавить кнопкам выбор количества
@@ -218,7 +295,7 @@
                                     type: "GET",
                                     data: {
                                         action: action,
-                                        amount: 100
+                                        amount: 1
                                     },
                                     success: function(response) {
                                         console.log("Action executed:", response);

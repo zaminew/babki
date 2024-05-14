@@ -66,7 +66,7 @@ class Game:
     def add_player(self, uniq_id, name):
         if self.game_maker_id == '':
             self.game_maker_id = uniq_id
-        self.players[uniq_id] =  Player(uniq_id, name, 1000, 100)
+        self.players[uniq_id] =  Player(uniq_id, name, 100000, 100)
 
     def start(self):
 
@@ -174,7 +174,7 @@ class Game:
                 'salary_level': player.salary_level,
                 'cash_flow': player.get_cash_flow(),
                 'name': player.name,
-                'ownership': str(player.get_assets_info())
+                'ownership': player.get_assets_info()
             },
             'card': self.current_card.get_card_info(player)
         }

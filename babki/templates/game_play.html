@@ -126,6 +126,7 @@
     .zebra li {
         padding: 4px;
         text-align: left; /* Выравнивание текста слева */
+        min-height: 10px;
     }
     .zebra li:nth-child(odd) {background: #277;}
     .zebra li:nth-child(even) {background: #244;}
@@ -156,35 +157,38 @@
     <div class="grid-container">
         <div class="grid-item left">
             <ul class="zebra scrollable-list">
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
             </ul>
             
             <p>АКЦИИ</p>
             <ul class="zebra scrollable-list" id="stock-list">
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
             </ul>
 
             <p>НЕДВИЖИМОСТЬ</p>
             <ul class="zebra scrollable-list" id="property-list">
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
             </ul>
 
             <p>БИЗНЕС</p>
             <ul class="zebra scrollable-list" id="businesses-list">
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
-                <li>Элемент списка</li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
             </ul>
 
         </div>
@@ -264,7 +268,14 @@
                         $("#cash-flow").text(gameData.player.cash_flow);
                         $("#cash").text(gameData.player.balance);
                         $("#loan").text(gameData.player.loan);
-                        $("#card").text("<p>Card: " + gameData.card + "</p>");
+                        var cardText = "<p>" + gameData.card + "</p>";
+                        if (gameData.players && gameData.players.length > 0) {
+                            var remainingPlayersText = "<p>Ожидаем игроков: " + gameData.players.join(', ') + "</p>";
+                            cardText += remainingPlayersText;
+                        }
+                        $("#card").html(cardText);
+
+
 
                         // Добавление элементов из массива property
                         $("#property-list").empty();

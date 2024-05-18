@@ -10,6 +10,7 @@ class Player:
         self.salary_level = salary_level
         self.child : bool = False
         self.is_ready : bool = False
+        self.action_taken : bool = False
         self.properties : List[PropertyItem] = []
         self.stocks : List[StockItem] = []
         self.businesses : List[BusinessItem] = []
@@ -25,6 +26,12 @@ class Player:
         flow -= self.loan.get_payment()
         #new_balance += sum(item.cash_flow for item in self.stocks)
         return flow
+
+    def take_turn(self):
+        self.action_taken = True
+
+    def reset_turn(self):
+        self.action_taken = False
         
     def get_assets_value(self):
         return sum(property.price for property in self.properties) + sum(stock.price for stock in self.stocks) + sum(business.price for business in self.businesses)

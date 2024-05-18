@@ -19,7 +19,7 @@ class Game:
     def __init__(self, settings: GameSetting, players : List[Player]):
         self.settings : GameSetting = settings
 
-        self.players : Dict[str, Player] = {}# = self.make_players(players)
+        self.players : Dict[str, Player] = {}
         self.game_maker_id = ''
         
         self.events_data : List[Item] = []
@@ -67,6 +67,17 @@ class Game:
         if self.game_maker_id == '':
             self.game_maker_id = uniq_id
         self.players[uniq_id] =  Player(uniq_id, name, 100000, 100)
+    
+    def all_actions_taken(self) -> bool:
+        return all(player.action_taken for player in self.players.values())
+    
+    def reset_all_actions_taken(self) -> None:
+        for player in self.players.values():
+            player.reset_turn()
+    
+    def remaining_players(self) -> list:
+        return [player.name for player in self.players.values() if not player.action_taken]
+
 
     def start(self):
 
@@ -116,6 +127,7 @@ class Game:
             '''
 
     def execute_player_action(self, player_id, user_action_data : Dict[str, int]):
+        # TODO проверить если игрок уже сходил и использовал карту, то не позволять ходить
         player : Player = self.players.get(player_id)
         if player is None:
             return False, 'You do not have access to this game'
@@ -127,12 +139,15 @@ class Game:
             if user_action_data['action'] == 'buy':
                 action.buy = amount
                 result = self.current_card.execute(player, action)
+                player.take_turn()
             elif user_action_data['action'] == 'sell':
                 action.sell = amount
                 result = self.current_card.execute(player, action)
+                player.take_turn()
             elif user_action_data['action'] == 'skip':
                 action.skip = 1
                 result = self.current_card.execute(player, action)
+                player.take_turn()
             elif user_action_data['action'] == 'take_loan':
                 result = player.loan.take(amount)
             elif user_action_data['action'] == 'repay_loan':
@@ -144,8 +159,7 @@ class Game:
             print(f'------> {result}')
             if result[0]:
                 if action.is_active():
-                    self.set_new_card()
-                    #self.print_card_in_console(self.set_new_card())
+                    pass
                 return True, str(result[1])
             else:
                 return False, result[1]
@@ -154,9 +168,39 @@ class Game:
         
     
     def get_data(self, player_id) -> Dict[str, int]:
+        
         player : Player = self.players.get(player_id)
         if player is None:
             return False, 'You do not have access to this game'
+        
+        
+        # TODO проверить сходил или нет. и если сходил то выдавать информацию о сходивших
+        if self.all_actions_taken():
+            self.reset_all_actions_taken()
+            self.set_new_card()
+        
+        if player.action_taken:
+            remaining_players_list = self.remaining_players()
+            return {
+            'actions': {
+                'buy': 0,
+                'sell': 0,
+                'skip': 0,
+                'take_loan': 0,
+                'repay_loan': 0,
+            },
+            'player': {
+                'balance': player.balance,
+                'loan': player.loan.amount,
+                'salary_level': player.salary_level,
+                'cash_flow': player.get_cash_flow(),
+                'name': player.name,
+                'ownership': player.get_assets_info()
+            },
+            'players': remaining_players_list,
+            'card': 'вы сходили'
+        }
+            
         available_action = self.current_card.get_available_action(player)
         available_action_loan = player.loan.get_available_action()
         #print(available_action)

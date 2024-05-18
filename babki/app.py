@@ -238,3 +238,7 @@ with app.app_context():
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
 
+#netsh interface portproxy add v4tov4 listenport=5000 listenaddress=<0.0.0.0> connectport=5000 connectaddress=172.20.97.196
+#netsh interface portproxy add v4tov4 listenport=5000 listenaddress=0.0.0.0 connectport=5000 connectaddress=172.20.97.196
+
+#netsh interface portproxy reset   

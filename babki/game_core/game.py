@@ -32,7 +32,7 @@ class Game:
         self.stock_cards : List[StockCard] = []
         self.property_cards: List[PropertyCard] = []
         self.business_cards : List[BusinessCard] = []
-
+        self.salary_card : SalaryCard = SalaryCard('Зарплатка', 'долгожданная в кармане')
         self.Deck : List[List[Card]] = []
 
         # Создать список объектов Event, ExpenseEvent, StockEvent из данных JSON
@@ -93,8 +93,21 @@ class Game:
         self.is_game_over = True
         # TODO логика вывода статистики и завершения игры
 
-    def set_new_card(self) -> Card:
-        self.current_card = random.choice(random.choice(self.Deck))
+    def set_new_card(self) -> Card:           
+        if self.current_step == 0:
+            self.current_card = random.choice(self.expense_cards)
+        elif self.current_step == 1:
+            self.current_card = random.choice(self.stock_cards)
+        elif self.current_step == 2:
+            self.current_card = random.choice(random.choice([self.property_cards, self.business_cards]))
+        else:
+            self.current_card = self.salary_card
+        
+        if self.current_step < 3:
+            self.current_step += 1
+        else:
+            self.current_step = 0
+            
         return self.current_card
 
     def print_card_in_console(self, card : Card):
